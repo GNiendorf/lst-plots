@@ -236,6 +236,7 @@ pre.code{font-family:var(--mono);font-size:12px;line-height:1.5;background:#0f27
 .cstep-grid h4{margin:0 0 3px;font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
 .cstep-grid p{margin:0;font-size:14px;color:var(--ink-2)}
 @media (max-width:800px){.pairs{grid-template-columns:1fr 54px}.pr-lab{grid-column:1 / -1;margin-top:6px}.cstep-grid{grid-template-columns:1fr}}
+.d-up{color:var(--red);font-weight:700}.d-dn{color:var(--green);font-weight:700}
 footer{max-width:1080px;margin:18px auto 0;color:var(--muted);font-size:13px}
 @media (max-width:900px){.grid4{grid-template-columns:repeat(2,minmax(0,1fr))}.grid3,.commits,.checks,.grid2{grid-template-columns:1fr}}
 @media (max-width:460px){.grid4{grid-template-columns:1fr}.wordmark{font-size:22px}details.dev summary{grid-template-columns:56px minmax(0,1fr) auto}}
@@ -1077,7 +1078,7 @@ topIdx[pos] = j;  topScore[pos] = o.score;</pre></div>
       <div class="cstep-grid">
         <div><h4>mkFit-fit menu</h4><p><code>hltInitialStepTrackCandidatesMkFit</code>: MkFitCore's building.</p></div>
         <div><h4>The port</h4><p><code>hltInitialStepTrackCandidatesMkFitDevice</code>: the same algorithm, organised for the GPU, plus the LST seed fit moved here (about 3 ms).</p></div>
-        <div><h4>Where it is slower</h4><p>Even without the seed fit, the port's building is slower than MkFitCore's. An operation-by-operation profile of both is being taken now; it will be added here.</p></div>
+        <div><h4>Where it is slower</h4><p>Even without the seed fit, the port's building is slower than MkFitCore's. Mostly in finding compatible hits; the operation-by-operation breakdown is below.</p></div>
       </div>
     </article>
     <article class="cstep">
@@ -1085,7 +1086,7 @@ topIdx[pos] = j;  topScore[pos] = o.score;</pre></div>
       <div class="cstep-grid">
         <div><h4>mkFit-fit menu</h4><p><code>hltInitialStepTrackCandidatesMkFitFit</code>: MkFitCore's final fit, 8 tracks per vector instruction.</p></div>
         <div><h4>The port</h4><p><code>hltInitialStepTrackCandidatesMkFitFitDevice</code>: the same fit, 8 tracks at a time, plus the extra outlier rounds of <a href="#dev-3">DEV-3</a> and <a href="#dev-10">DEV-10</a>.</p></div>
-        <div><h4>Result</h4><p>About even; slightly faster since the port's CPU code is vectorised the same way as MkFitCore's.</p></div>
+        <div><h4>Why it's faster</h4><p>MkFitCore recomputes pixel hit positions through CMSSW's CPE classes during the fit; the port uses flat tables. See the breakdown below.</p></div>
       </div>
     </article>
     <article class="cstep">
@@ -1105,6 +1106,35 @@ topIdx[pos] = j;  topScore[pos] = o.score;</pre></div>
       </div>
     </article>
 
+  </div>
+
+  <div class="sheet" id="cpu-mkfit">
+    <header><div class="eyebrow">Inside mkFit</div><h2>Where the port is faster or slower than MkFitCore</h2>
+      <p class="sub">Track building and the final fit, split into the same operations on both sides. One thread on a quiet machine, so each operation's own cost is visible; ms per event.</p></header>
+    <div class="flow-label">Track building</div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Operation</th><th class="n">MkFitCore</th><th class="n">The port</th><th class="n">Difference</th><th>What we know about why</th></tr></thead><tbody>
+      <tr><td>Propagate to the next layer and find compatible hits</td><td class="n">10.0</td><td class="n">15.4</td><td class="n d-up">+5.4</td><td>The main gap. Both codes search the hits one candidate at a time. One known difference: MkFitCore computes the search window for 8 candidates at once with vector instructions; the port computes it one candidate at a time, also on the CPU. How much of the 5.4 ms that explains needs a line-by-line profile.</td></tr>
+      <tr><td>chi2 of each compatible hit, accept or reject</td><td class="n">5.4</td><td class="n">4.8</td><td class="n d-dn">−0.6</td><td>Both compute chi2 for 8 candidates per vector instruction.</td></tr>
+      <tr><td>Keep the best candidates per seed</td><td class="n">0.5</td><td class="n">1.1</td><td class="n d-up">+0.6</td><td>Small; within about ±30%.</td></tr>
+      <tr><td>Kalman update with the chosen hit</td><td class="n">1.1</td><td class="n">1.1</td><td class="n">0.0</td><td>Even.</td></tr>
+      <tr><td>Candidate bookkeeping, seeds in and out, filters</td><td class="n">2.2</td><td class="n">2.0</td><td class="n d-dn">−0.2</td><td>Even within the errors.</td></tr>
+      <tr><td>Backward fit</td><td class="n">4.6</td><td class="n">3.7</td><td class="n d-dn">−0.9</td><td></td></tr>
+      <tr><td>Duplicate cleaning</td><td class="n">2.2</td><td class="n">1.1</td><td class="n d-dn">−1.0</td><td>MkFitCore compares every pair of tracks; the port only compares tracks that fall in the same small cell, a layout built for the GPU that also pays off on the CPU.</td></tr>
+      <tr><td>LST seed fit</td><td class="n">–</td><td class="n">2.8</td><td class="n d-up">+2.8</td><td>Moved here from the seed step; the mkFit-fit menu does it outside building, in CMSSW's seed creator.</td></tr>
+      <tr class="hl"><td>Building module, measured directly</td><td class="n">25.9</td><td class="n">31.3</td><td class="n d-up">+5.4</td><td>Without the moved seed fit: +2.6.</td></tr>
+      </tbody></table></div>
+    <div class="flow-label" style="margin-top:20px">Final fit</div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Operation</th><th class="n">MkFitCore</th><th class="n">The port</th><th class="n">Difference</th><th>What we know about why</th></tr></thead><tbody>
+      <tr><td>Pixel hit positions recomputed with the track angle (CPE)</td><td class="n">5.9</td><td class="n">1.7</td><td class="n d-dn">−4.2</td><td>MkFitCore calls back into CMSSW's pixel CPE classes for every pixel hit it fits; the port reads the same formula's inputs from flat tables built once per run.</td></tr>
+      <tr><td>The fit itself</td><td class="n">11.5</td><td class="n">13.9</td><td class="n d-up">+2.4</td><td>The port's number includes the extra outlier tests and refits of <a href="#dev-3">DEV-3</a> and <a href="#dev-10">DEV-10</a>.</td></tr>
+      <tr class="hl"><td>Fit module, measured directly</td><td class="n">17.4</td><td class="n">15.6</td><td class="n d-dn">−1.8</td><td></td></tr>
+      </tbody></table></div>
+    <ul class="plain note">
+      <li>How these were measured: each operation's share of its module comes from a sampling profile with full call stacks (about 98,000 samples per code, 80 ttbar PU200 events); the module's time comes from a run without the profiler. Rows above 3 ms carry about ±5–10% statistical error, rows near 1 ms up to ±30%, so the rows add up to the module totals only within those errors.</li>
+      <li>On a busy machine (the HLT layout, chart above) the building gap is larger: 31.4 vs 41.1 ms. The port's building slows down more under load than MkFitCore's (+31% vs +21%), which suggests memory traffic; that has not been measured yet.</li>
+    </ul>
   </div>
 
 
