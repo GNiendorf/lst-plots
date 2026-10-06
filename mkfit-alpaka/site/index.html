@@ -280,7 +280,7 @@ footer{max-width:1080px;margin:18px auto 0;color:var(--muted);font-size:13px}
       <div class="kpi"><div class="v">−91<small>%</small></div><div class="k">HLT tracking time</div><div class="d">26.5 ms per event vs 288.8 in the default KF menu</div></div>
       <div class="kpi"><div class="v">+11.6<small>%</small></div><div class="k">menu throughput</div><div class="d">30.3 vs 27.2 events per second</div></div>
       <div class="kpi"><div class="v">−0.04</div><div class="k">efficiency vs KF</div><div class="d">ttbar 91.99% vs 92.03%, fewer fakes (0.91 vs 0.93%)</div></div>
-      <div class="kpi"><div class="v">235<small>ms</small></div><div class="k">CPU menu tracking</div><div class="d">vs 294 (mkFit-fit menu) and 396 (KF); same code</div></div>
+      <div class="kpi"><div class="v">231<small>ms</small></div><div class="k">CPU menu tracking</div><div class="d">vs 291 (mkFit-fit menu) and 397 (KF); same code</div></div>
     </div>
   </div>
 
@@ -999,13 +999,12 @@ topIdx[pos] = j;  topScore[pos] = o.score;</pre></div>
     </div>
     <div class="table-wrap"><table>
       <thead><tr><th>Step</th><th class="n">MkFitCore menu, CPU</th><th class="n">The port, CPU</th><th class="n">The port, GPU kernel time</th><th class="n">CPU ÷ GPU</th></tr></thead>
-      <tbody><tr><td>Outer-tracker rechits</td><td class='n'>23.6</td><td class='n'>5.1</td><td class='n'>0.03</td><td class='n'>769×</td></tr><tr><td>Pixel seeds and LST input</td><td class='n'>15.4</td><td class='n'>4.2</td><td class='n'>0.25</td><td class='n'>61×</td></tr><tr><td>Hits for mkFit (EventOfHits)</td><td class='n'>14.5</td><td class='n'>9.2</td><td class='n'>0.07</td><td class='n'>202×</td></tr><tr><td>Seeds from LST's candidates</td><td class='n'>15.3</td><td class='n'>1.2</td><td class='n'>0.30</td><td class='n'>50×</td></tr><tr><td>Track building</td><td class='n'>25.9</td><td class='n'>32.7</td><td class='n'>2.84</td><td class='n'>9×</td></tr><tr><td>Final fit</td><td class='n'>17.4</td><td class='n'>19.1</td><td class='n'>2.16</td><td class='n'>8×</td></tr><tr><td>Navigation and beam-line state<sup>*</sup></td><td class='n'>13.7</td><td class='n'>11.1</td><td class='n'>1.30</td><td class='n'>11×</td></tr><tr class='hl'><td>Total of these steps</td><td class='n'>125.8</td><td class='n'>82.7</td><td class='n'>6.96</td><td class='n'>18×</td></tr></tbody></table></div>
+      <tbody><tr><td>Outer-tracker rechits</td><td class='n'>23.6</td><td class='n'>5.0</td><td class='n'>0.03</td><td class='n'>769×</td></tr><tr><td>Pixel seeds and LST input</td><td class='n'>15.4</td><td class='n'>3.9</td><td class='n'>0.25</td><td class='n'>61×</td></tr><tr><td>Hits for mkFit (EventOfHits)</td><td class='n'>14.5</td><td class='n'>9.3</td><td class='n'>0.07</td><td class='n'>202×</td></tr><tr><td>Seeds from LST's candidates</td><td class='n'>15.3</td><td class='n'>1.2</td><td class='n'>0.30</td><td class='n'>50×</td></tr><tr><td>Track building</td><td class='n'>25.9</td><td class='n'>31.3</td><td class='n'>2.84</td><td class='n'>9×</td></tr><tr><td>Final fit</td><td class='n'>17.4</td><td class='n'>15.6</td><td class='n'>2.16</td><td class='n'>8×</td></tr><tr><td>Navigation and beam-line state<sup>*</sup></td><td class='n'>13.7</td><td class='n'>11.1</td><td class='n'>1.30</td><td class='n'>11×</td></tr><tr class='hl'><td>Total of these steps</td><td class='n'>125.8</td><td class='n'>77.6</td><td class='n'>6.96</td><td class='n'>18×</td></tr></tbody></table></div>
     <ul class="plain note">
-      <li>MkFitCore menu: the trackingMkFitFit menu, everything on the CPU. "The port, CPU" is the port on Alpaka's serial backend, measured before the CPU vectorisation change; its building row also contains the LST seed fit (about 3 ms), which the MkFitCore menu does under "Seeds from LST's candidates".</li>
+      <li>MkFitCore menu: the trackingMkFitFit menu, everything on the CPU. "The port, CPU" is the port on Alpaka's serial backend, as pushed (<code>06232300f74</code>); its building row also contains the LST seed fit (about 3 ms), which the MkFitCore menu does under "Seeds from LST's candidates".</li>
       <li>GPU column: kernel execution time only (measured with CUPTI), without launch overhead or CPU-side work. <sup>*</sup>Turning the results into reco::Track objects stays on the CPU, about 7 ms per event in the GPU menu.</li>
       <li>CPU columns: 80 events with a profiler attached; GPU column: 100 events after a 30-event warm-up. LST itself is unchanged by this PR and is not in the table.</li>
-      <li>A change ready but not yet in #290 vectorises the port's CPU Kalman loops as MkFitCore does. At the CI layout it cuts the port's CPU final fit from 24.6 to 20.3 ms and building from 42.9 to 41.0 ms per event, with physics unchanged within errors; the GPU code is identical.</li>
-      <li>The number that counts for the HLT is the whole menu on a busy machine: tracking 288.8 → 26.5 ms per event (4 jobs × 16 threads × 16 streams; <a href="#results">Results</a>).</li>
+            <li>The number that counts for the HLT is the whole menu on a busy machine: tracking 288.8 → 26.5 ms per event (4 jobs × 16 threads × 16 streams; <a href="#results">Results</a>).</li>
     </ul>
     <div class="flow-label" style="margin-top:22px">Inside track building on the GPU: 2.84 ms of kernels per event</div>
     <div class="hbars kern"><div class='hb-lab'>Find compatible hits<small>KernelSelectPrep + KernelSelectScan</small></div><div class='hb-track'><div class='hb c-blue' style='width:calc((100% - 120px) * 1.000)'></div><span class='hb-v'>0.92 ms</span></div><div class='hb-lab'>Keep the best candidates per seed<small>KernelEngineSelect</small></div><div class='hb-track'><div class='hb c-blue' style='width:calc((100% - 120px) * 0.713)'></div><span class='hb-v'>0.65 ms</span></div><div class='hb-lab'>Candidate bookkeeping<small>KernelEngineActivate, BuildList, GatherSeeds, …</small></div><div class='hb-track'><div class='hb c-blue' style='width:calc((100% - 120px) * 0.613)'></div><span class='hb-v'>0.56 ms</span></div><div class='hb-lab'>Kalman update with the chosen hit<small>KernelEngineUpdate</small></div><div class='hb-track'><div class='hb c-blue' style='width:calc((100% - 120px) * 0.288)'></div><span class='hb-v'>0.26 ms</span></div><div class='hb-lab'>chi2 of every compatible hit<small>KernelEngineChi2</small></div><div class='hb-track'><div class='hb c-blue' style='width:calc((100% - 120px) * 0.182)'></div><span class='hb-v'>0.17 ms</span></div><div class='hb-lab'>Accept or reject each option<small>KernelEngineOptions</small></div><div class='hb-track'><div class='hb c-blue' style='width:calc((100% - 120px) * 0.167)'></div><span class='hb-v'>0.15 ms</span></div><div class='hb-lab'>Backward fit<small>BkFitKernel</small></div><div class='hb-track'><div class='hb c-blue' style='width:calc((100% - 120px) * 0.079)'></div><span class='hb-v'>0.07 ms</span></div><div class='hb-lab'>Duplicate cleaning<small>clean::*</small></div><div class='hb-track'><div class='hb c-blue' style='width:calc((100% - 120px) * 0.055)'></div><span class='hb-v'>0.05 ms</span></div></div>
@@ -1128,7 +1127,7 @@ topIdx[pos] = j;  topScore[pos] = o.score;</pre></div>
         <tr><td>mkFit fit (trackingMkFitFit menu)</td><td class="n">184.0 ms</td><td class="n">−36%</td><td class="n">28.5</td><td class="n">90 ms</td><td class="n">10.3 GB</td></tr>
         <tr class="hl"><td>This PR</td><td class="n">26.5 ms</td><td class="n">−91%</td><td class="n">30.3</td><td class="n">98 ms</td><td class="n">11.8 GB</td></tr>
       </tbody></table></div>
-    <p class="note">On the CPU menu (serial backend) tracking is 235 ms, vs 294 for the mkFit-fit menu and 396 for KF. GPU memory is the peak of the four jobs' summed device memory and varies by about ±0.4 GB between runs.</p>
+    <p class="note">On the CPU menu (serial backend) tracking is 231 ms, vs 291 for the mkFit-fit menu and 397 for KF (re-measured on #290 as pushed). GPU memory is the peak of the four jobs' summed device memory and varies by about ±0.4 GB between runs.</p>
   </div>
 
   <div class="sheet">
@@ -1140,16 +1139,16 @@ topIdx[pos] = j;  topScore[pos] = o.score;</pre></div>
     <div class="table-wrap"><table>
       <thead><tr><th>Stage</th><th class="n">mkFit-fit menu, CPU</th><th class="n">This PR, CPU backend</th><th class="n">This PR, GPU backend: CPU time left on the host</th></tr></thead>
       <tbody>
-        <tr><td>OT rechits</td><td class="n">29.5</td><td class="n">6.0</td><td class="n">0.6</td></tr>
-        <tr><td>Pixel seeds + LST input</td><td class="n">21.0</td><td class="n">5.4</td><td class="n">0.5</td></tr>
-        <tr><td>mkFit hits + EventOfHits</td><td class="n">19.1</td><td class="n">12.3</td><td class="n">2.1</td></tr>
-        <tr><td>mkFit seeds from the LST candidates</td><td class="n">21.4</td><td class="n">1.5</td><td class="n">0.4</td></tr>
-        <tr><td>Track building</td><td class="n">31.7</td><td class="n">42.6*</td><td class="n">1.1</td></tr>
-        <tr><td>Final fit</td><td class="n">23.4</td><td class="n">24.4</td><td class="n">0.8</td></tr>
-        <tr><td>Output conversion (navigation, beam-line state, reco::Track)</td><td class="n">19.3</td><td class="n">15.7</td><td class="n">9.5</td></tr>
-        <tr class="hl"><td>Total</td><td class="n">165.4</td><td class="n">107.8</td><td class="n">15.0</td></tr>
+        <tr><td>OT rechits</td><td class="n">29.0</td><td class="n">6.0</td><td class="n">0.6</td></tr>
+        <tr><td>Pixel seeds + LST input</td><td class="n">20.9</td><td class="n">5.2</td><td class="n">0.4</td></tr>
+        <tr><td>mkFit hits + EventOfHits</td><td class="n">18.7</td><td class="n">12.4</td><td class="n">2.0</td></tr>
+        <tr><td>mkFit seeds from the LST track candidates</td><td class="n">21.4</td><td class="n">1.5</td><td class="n">0.4</td></tr>
+        <tr><td>Track building</td><td class="n">31.4</td><td class="n">41.1*</td><td class="n">1.1</td></tr>
+        <tr><td>Final fit</td><td class="n">23.2</td><td class="n">20.4</td><td class="n">0.8</td></tr>
+        <tr><td>Output conversion (navigation, beam-line state, reco::Track)</td><td class="n">19.2</td><td class="n">15.8</td><td class="n">9.3</td></tr>
+        <tr class="hl"><td>Total</td><td class="n">163.9</td><td class="n">102.4</td><td class="n">14.7</td></tr>
       </tbody></table></div>
-    <p class="note">*The CPU building row also contains the LST seed-state fit (about 3 ms), which the mkFit-fit menu does in its seed converter. Measured on #290 before the CPU vectorisation change that is being folded in; with it, the CPU backend's final fit is 20.3 ms (below the mkFit-fit menu's 23.4) and its building 41.0 ms. The GPU's own kernel time for the whole chain is about 7 ms per event; see <a href="#parallel">How it runs</a>.</p>
+    <p class="note">*The CPU building row also contains the LST seed-state fit (about 3 ms), which the mkFit-fit menu does in its seed converter. Measured on #290 as pushed (<code>06232300f74</code>, which includes the CPU vectorisation), two rounds; the GPU column from one round. The GPU's own kernel time for the whole chain is about 7 ms per event; see <a href="#parallel">How it runs</a>.</p>
   </div>
 
   <div class="sheet">
@@ -1409,7 +1408,7 @@ topIdx[pos] = j;  topScore[pos] = o.score;</pre></div>
         <tr><td>Is the configuration defined twice?</td><td>The device configuration is converted from MkFitCore's own; today the supported-settings checks also exist in python. In the proposal the GPU driver checks the configuration in C++ and rejects anything it does not support.</td><td><span class="tag t-amber">to do</span></td></tr>
         <tr><td>Some files are very large.</td><td>PropagationMPlex.h 1425 lines, NavSearch.h 1191, FitKernels.h 949. In the plan the copied physics goes back into MkFitCore's own files; what stays is split by stage and kernel.</td><td><span class="tag t-amber">to do</span></td></tr>
         <tr><td>Is ROCm validated?</td><td>It builds; it needs AMD test machines or a clear unsupported note.</td><td><span class="tag t-grey">later</span></td></tr>
-        <tr><td>Is the CPU backend as fast as MkFitCore?</td><td>The whole CPU chain is faster (107.8 vs 165.4 ms). A change ready but not yet in #290 vectorises the CPU Kalman loops as MkFitCore does: CPU tracking −7.4 ms, the final fit now faster than MkFitCore's (20.3 vs 23.4 ms), physics unchanged within errors. Building proper is still about 6 ms slower (hit search and candidate bookkeeping).</td><td><span class="tag t-blue">in progress</span></td></tr>
+        <tr><td>Is the CPU backend as fast as MkFitCore?</td><td>The whole CPU chain is faster (102.4 vs 163.9 ms), and the final fit too (20.4 vs 23.2 ms) since #290 vectorises its CPU Kalman loops as MkFitCore does. Track building is still slower (41.1 vs 31.4 ms, about 3 ms of it the LST seed fit). See <a href="#cpu">Why faster on CPU</a>.</td><td><span class="tag t-blue">in progress</span></td></tr>
         <tr><td>Does it use more GPU memory?</td><td>11.8 GB vs 10.1 GB for the KF menu at 4 jobs (+17%), after releasing products early and right-sizing buffers.</td><td><span class="tag t-green">stated</span></td></tr>
         <tr><td>Who maintains it?</td><td>In the plan the GPU driver lives in the mkFit packages and we maintain it; to agree with the mkFit developers.</td><td><span class="tag t-amber">to do</span></td></tr>
       </tbody></table></div>
