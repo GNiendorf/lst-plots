@@ -1154,7 +1154,7 @@ topIdx[pos] = j;  topScore[pos] = o.score;</pre></div>
       </tbody></table></div>
     <ul class="plain note">
       <li>How these were measured: each operation's share of its module comes from a sampling profile with full call stacks (about 98,000 samples per code, 80 ttbar PU200 events); the module's time comes from a run without the profiler. Rows above 3 ms carry about ±5–10% statistical error, rows near 1 ms up to ±30%, so the rows add up to the module totals only within those errors.</li>
-      <li>On a busy machine (the HLT layout, chart above) the building gap is larger: 31.4 vs 41.1 ms. The port's building slows down more under load than MkFitCore's (+31% vs +21%), which suggests memory traffic; that has not been measured yet.</li>
+      <li>On a busy machine (the HLT layout, chart above) the building gap looks larger: 31.4 vs 41.1 ms. Two things explain that, not a greater load sensitivity of the port: MkFitCore splits its building across otherwise idle CPU threads, whose time is not charged to its module (about 3.4 ms per event at the HLT layout; with that switched off, its building measures 33.1 instead of 29.7 ms on the same events, against 40.1 for the port); and on the same events both codes slow down by the same factor under load (lower clock, less cache per thread). The port runs each event's building on one thread.</li>
     </ul>
   </div>
 
