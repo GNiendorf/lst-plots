@@ -863,6 +863,7 @@ chain is already in the process.</pre>
       <div><h4>Why</h4><p>CMSSW's propagator is not available on the GPU; mkFit's is, and the building already uses it.</p></div>
       <div><h4>Effect</h4><p>Efficiency −0.013% (ttbar) and −0.014% (QCD), ± 0.001%. No validation plot bin moves by more than 2σ; fake and duplicate rates equal or lower.</p></div>
     </div>
+    <div class="banner" style="margin-top:4px"><b>One more difference, found on 6 October:</b> when the fit of a pT3 or pT5 candidate fails, CMSSW falls back to the candidate's full pixel seed, which also carries the outer-tracker hits the pixel track picked up. The port keeps only the pixel-detector hits and refits them. This affects about 3.6% of seeds. Those tracks then search the outer tracker from scratch: they end up 3.5 hits longer on average, about 0.85 low-pT tracks per ttbar event are lost, and the building does about 13% more work. A fix (and a better seed fit that avoids most fallbacks) is being evaluated.</div>
     <details><summary>Full technical note</summary><div class="dbody"><pre class="msg">Seed states of the LST T5 / T4 / pT3 / pT5 seeds from a device Kalman fit (ON; known small regression)
   Reference: LSTOutputConverter.cc:236-262 runs SeedFromConsecutiveHitsCreator::makeSeed on the host (FastHelix + initial
     errors + one forward KF with PropagatorWithMaterial and the track-angle hit refit), MkFitSeedConverter.cc:107-160
