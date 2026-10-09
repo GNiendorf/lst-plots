@@ -297,39 +297,39 @@ p code,li code,td code,h3 code,span code,summary code,.stage code{overflow-wrap:
 <section class="page" id="page-overview" data-page="overview">
   <div class="sheet">
     <header><div class="eyebrow">At a glance</div><h2>Tracking on the GPU, at KF-level physics</h2>
-      <p class="sub">Measured on the Phase-2 HLT GPU menu (4 jobs × 16 threads × 16 streams on one L40, ttbar PU200) and validated on 5,000 ttbar and 5,000 QCD events.</p></header>
+      <p class="sub">Measured on the Phase-2 HLT GPU menu (4 jobs × 16 threads × 16 streams on one L40, ttbar PU200; all three menus from one build, mean of two alternating runs) and validated on 5,000 ttbar and 5,000 QCD events.</p></header>
     <div class="grid4">
-      <div class="kpi"><div class="v">−91<small>%</small></div><div class="k">HLT tracking time</div><div class="d">26.5 ms per event vs 288.8 in the default KF menu</div></div>
-      <div class="kpi"><div class="v">+11.6<small>%</small></div><div class="k">menu throughput</div><div class="d">30.3 vs 27.2 events per second</div></div>
+      <div class="kpi"><div class="v">−89<small>%</small></div><div class="k">HLT tracking time</div><div class="d">32.7 ms per event vs 289.5 in the default KF menu</div></div>
+      <div class="kpi"><div class="v">+11.9<small>%</small></div><div class="k">menu throughput</div><div class="d">30.5 vs 27.3 events per second</div></div>
       <div class="kpi"><div class="v">−0.03</div><div class="k">efficiency vs KF</div><div class="d">ttbar 91.93% vs 91.96%, fewer fakes (0.92 vs 0.93%)</div></div>
-      <div class="kpi"><div class="v">223<small>ms</small></div><div class="k">CPU menu tracking</div><div class="d">vs 290 (mkFit-fit menu) and 396 (KF); same code</div></div>
+      <div class="kpi"><div class="v">223<small>ms</small></div><div class="k">CPU menu tracking</div><div class="d">vs 295 (mkFit-fit menu) and 400 (KF); same code</div></div>
     </div>
   </div>
 
   <div class="sheet">
     <header><div class="eyebrow">The chain</div><h2>What runs where</h2>
       <p class="sub">Today the initial step moves between GPU and CPU three times, and everything after LST runs on the CPU. With #290 every step from the pixel tracks to the final fit stays on the GPU; the CPU only builds the reco::Tracks that PF, vertexing and the other consumers read.</p></header>
-    <div class="flow-label">Today · default Phase-2 HLT menu · tracking 288.8 ms per event</div>
+    <div class="flow-label">Today · default Phase-2 HLT menu · tracking 289.5 ms per event</div>
     <div class="chain-wrap"><div class="chain" role="img" aria-label="Today: pixel tracks on the GPU, LST input on the CPU, LST on the GPU, then LST to mkFit seeds, mkFit building, the Kalman-filter fit and reco::Track all on the CPU">
       <div class="stage gpu"><span class="badge b-gpu">GPU</span><b>Pixel tracks</b><span class="t">Patatrack</span></div><div class="arrow" aria-hidden="true">→</div>
       <div class="stage cpu"><span class="badge b-cpu">CPU</span><b>LST input</b><span class="t">seed refit <code>hlt<wbr>Initial<wbr>Step<wbr>Seeds</code>, packing <code>hlt<wbr>Input<wbr>LST</code></span></div><div class="arrow" aria-hidden="true">→</div>
-      <div class="stage gpu"><span class="badge b-gpu">GPU</span><b>LST</b><span class="t">a CPU thread waits on the GPU during the run</span></div><div class="arrow" aria-hidden="true">→</div>
+      <div class="stage gpu"><span class="badge b-gpu">GPU</span><b>LST</b><span class="t"><code>hlt<wbr>LST</code></span></div><div class="arrow" aria-hidden="true">→</div>
       <div class="stage cpu"><span class="badge b-cpu">CPU</span><b>LST → mkFit seeds</b><span class="t"><code>hlt<wbr>Initial<wbr>Step<wbr>Trajectory<wbr>Seeds<wbr>LST</code></span></div><div class="arrow" aria-hidden="true">→</div>
       <div class="stage cpu"><span class="badge b-cpu">CPU</span><b>mkFit building</b><span class="t">hits, EventOfHits, candidates (MkFitCore)</span></div><div class="arrow" aria-hidden="true">→</div>
       <div class="stage cpu"><span class="badge b-cpu">CPU</span><b>Final fit</b><span class="t">CMSSW Kalman filter, <code>hlt<wbr>Initial<wbr>Step<wbr>Tracks</code></span></div><div class="arrow" aria-hidden="true">→</div>
       <div class="stage cpu"><span class="badge b-cpu">CPU</span><b>reco::Track</b><span class="t">for PF and vertexing</span></div>
     </div></div>
-    <div class="flow-label">With #290 · tracking 26.5 ms per event</div>
+    <div class="flow-label">With #290 · tracking 32.7 ms per event</div>
     <div class="chain-wrap"><div class="chain" role="img" aria-label="With #290: pixel tracks, LST input, LST, LST to mkFit seeds, mkFit building and final fit on the GPU; reco::Track conversion on the CPU">
       <div class="stage gpu"><span class="badge b-gpu">GPU</span><b>Pixel tracks</b><span class="t">Patatrack</span></div><div class="arrow" aria-hidden="true">→</div>
       <div class="stage gpu"><span class="badge b-gpu">GPU</span><b>LST input</b><span class="t">pixel seeds refitted, OT hits made, on the GPU</span></div><div class="arrow" aria-hidden="true">→</div>
-      <div class="stage gpu"><span class="badge b-gpu">GPU</span><b>LST</b><span class="t">asynchronous: no CPU thread waits</span></div><div class="arrow" aria-hidden="true">→</div>
+      <div class="stage gpu"><span class="badge b-gpu">GPU</span><b>LST</b><span class="t">unchanged by this PR</span></div><div class="arrow" aria-hidden="true">→</div>
       <div class="stage gpu"><span class="badge b-gpu">GPU</span><b>LST → mkFit seeds</b><span class="t">same seeds as the host version</span></div><div class="arrow" aria-hidden="true">→</div>
       <div class="stage gpu"><span class="badge b-gpu">GPU</span><b>mkFit building</b><span class="t">hits, EventOfHits, candidates</span></div><div class="arrow" aria-hidden="true">→</div>
       <div class="stage gpu"><span class="badge b-gpu">GPU</span><b>Final fit</b><span class="t">outlier rules as in KF</span></div><div class="arrow" aria-hidden="true">→</div>
       <div class="stage cpu"><span class="badge b-cpu">CPU</span><b>reco::Track</b><span class="t">for PF and vertexing</span></div>
     </div></div>
-    <p class="note">Tracking times are CPU time per event in the Phase-2 HLT GPU menu (4 jobs × 16 threads × 16 streams, one L40). <a href="#seeds">How the pixel seeds now reach LST without the CPU</a>.</p>
+    <p class="note">Tracking times are CPU time per event in the Phase-2 HLT GPU menu (4 jobs × 16 threads × 16 streams, one L40; all three menus from one build, mean of two alternating runs). <a href="#seeds">How the pixel seeds now reach LST without the CPU</a>.</p>
   </div>
 
   <div class="sheet" id="seeds">
@@ -352,13 +352,13 @@ p code,li code,td code,h3 code,span code,summary code,.stage code{overflow-wrap:
     </div></div>
     <p class="note">The CPU still converts the pixel tracks to reco::Track for their other readers. LST's input reads one small index map from that step, so that each LST seed points at the right pixel track. No seed data goes through the CPU.</p>
     <div class="grid3" style="margin-top:16px">
-      <div class="kpi"><div class="v">21.0 → 0.5<small>ms</small></div><div class="k">seed refit + LST input</div><div class="d">CPU time per event; the GPU kernels take 0.3 ms</div></div>
-      <div class="kpi"><div class="v">29.5 → 0.6<small>ms</small></div><div class="k">OT rechits</div><div class="d">CPU time per event</div></div>
+      <div class="kpi"><div class="v">20.7 → 0.4<small>ms</small></div><div class="k">seed refit + LST input</div><div class="d">CPU time per event; the GPU kernels take 0.3 ms</div></div>
+      <div class="kpi"><div class="v">29.8 → 0.6<small>ms</small></div><div class="k">OT rechits</div><div class="d">CPU time per event</div></div>
       <div class="kpi"><div class="v">−0.03<small>%</small></div><div class="k">efficiency effect</div><div class="d">ttbar −0.03 ± 0.03, QCD −0.035 ± 0.026; within errors (DEV-7)</div></div>
     </div>
-    <p class="note">CPU-thread times at 4 jobs × 16 threads × 16 streams: the mkFit-fit menu, where all of this runs on the CPU, vs this PR on the GPU backend.</p>
+    <p class="note">CPU-thread times at 4 jobs × 16 threads × 16 streams (both menus from one build, mean of two alternating runs): the mkFit-fit menu, where all of this runs on the CPU, vs this PR on the GPU backend.</p>
     <div class="grid2" style="margin-top:16px">
-      <div class="card"><h3>Where it is in #290</h3><p>Two commits: “Seeds and the LST hand-off” (<code>MkFitAlpakaLstInputProducer</code>, <code>PixSeedKernels.h</code>) and “Hit input and EventOfHits” (<code>MkFitAlpakaOTRecHitsProducer</code>). The asynchronous LST change is a different thing.</p></div>
+      <div class="card"><h3>Where it is in #290</h3><p>Two commits: “Seeds and the LST hand-off” (<code>MkFitAlpakaLstInputProducer</code>, <code>PixSeedKernels.h</code>) and “Hit input and EventOfHits” (<code>MkFitAlpakaOTRecHitsProducer</code>).</p></div>
       <div class="card"><h3>What it waits for</h3><p>The refit uses mkFit's propagation and Kalman update on the GPU, and the same fit then gives mkFit its starting seeds. In the <a href="#plan">proposed plan</a> this is PR L3. It needs only M1, MkFitCore's portable physics, not the rest of the mkFit work, so it can merge right after M1, around December, ahead of the GPU building and fit.</p></div>
     </div>
     <details><summary>Could it come even sooner?</summary><div class="dbody">
@@ -376,7 +376,7 @@ p code,li code,td code,h3 code,span code,summary code,.stage code{overflow-wrap:
     <div class="card"><span class="tag t-blue">Page</span><h3>Deviations</h3><p>The nine places where the port differs from mkFit on purpose: what, why, and what each one changes.</p><a class="go" href="#deviations">Read the deviations</a></div>
     <div class="card"><span class="tag t-blue">Page</span><h3>How it runs</h3><p>How MkFitCore and the port each run thousands of candidates in parallel, the code side by side, and the time per step.</p><a class="go" href="#parallel">See how it runs</a></div>
     <div class="card"><span class="tag t-blue">Page</span><h3>Results</h3><p>Timing on GPU and CPU, physics against the KF and mkFit-fit menus, memory, and the validation plots.</p><a class="go" href="#results">See the numbers</a></div>
-    <div class="card"><span class="tag t-amber">Proposal</span><h3>Integration plan</h3><p>Update mkFit's own files so the same code runs on CPU and GPU. Seven PRs, built in about a week; about four months of review.</p><a class="go" href="#plan">See the plan</a></div>
+    <div class="card"><span class="tag t-amber">Proposal</span><h3>Integration plan</h3><p>Update mkFit's own files so the same code runs on CPU and GPU. Six PRs, built in about a week; about four months of review.</p><a class="go" href="#plan">See the plan</a></div>
     <div class="card"><span class="tag t-blue">Page</span><h3>Why faster on CPU</h3><p>Where the port's CPU speed comes from, step by step, and how mkFit's own operations compare.</p><a class="go" href="#cpu">See why</a></div>
   </div>
 </section>
@@ -385,15 +385,14 @@ p code,li code,td code,h3 code,span code,summary code,.stage code{overflow-wrap:
 <section class="page" id="page-changes" data-page="changes" hidden>
   <div class="sheet">
     <header><div class="eyebrow">High level</div><h2>What's in #290</h2>
-      <p class="sub">23 commits, 81,106 added lines. Most of the size is either other open PRs we build on, or the new portable mkFit package.</p></header>
+      <p class="sub">21 commits, 80,578 added lines. Most of the size is either other open PRs we build on, or the new portable mkFit package.</p></header>
     <div class="composition" role="img" aria-label="Share of added lines by group">
-      <span class="c-dep" style="width:56.3%"></span><span class="c-glue" style="width:0.2%"></span><span class="c-lst" style="width:0.6%"></span><span class="c-pkg" style="width:42.9%"></span>
+      <span class="c-dep" style="width:56.6%"></span><span class="c-glue" style="width:0.2%"></span><span class="c-pkg" style="width:43.2%"></span>
     </div>
-    <div class="legend"><span><i class="c-dep"></i>dependencies, 45,629 lines</span><span><i class="c-glue"></i>OT hits on demand, 158</span><span><i class="c-lst"></i>asynchronous LST, 503</span><span><i class="c-pkg"></i>MkFitAlpaka package, 34,816</span></div>
-    <div class="grid2" style="margin-top:18px">
+    <div class="legend"><span><i class="c-dep"></i>dependencies, 45,629 lines</span><span><i class="c-glue"></i>OT hits on demand, 158</span><span><i class="c-pkg"></i>MkFitAlpaka package, 34,791</span></div>
+    <div class="grid3" style="margin-top:18px">
       <div class="card"><span class="tag t-grey">7 commits · dependencies</span><h3>Open PRs this work builds on</h3><p>mkFit's final-fit and field updates, the LST memory, DNN and timing PRs, the mkFit LST-step fixes with their JSON, and the fine-grained material. About 30k of their lines are JSON copies that move to cms-data. They drop out of the branch as they merge.</p></div>
       <div class="card"><span class="tag t-blue">12 commits · new package</span><h3>RecoTracker/MkFitAlpaka</h3><p>mkFit's initial-step chain, portable with Alpaka: data formats and math, geometry and navigation tables, hits, seeds and the LST hand-off, building, the final fit and the output conversion, the menu switch, tests and documentation.</p></div>
-      <div class="card"><span class="tag t-green">2 commits · LST</span><h3>Asynchronous LST</h3><p>LST's run split into tasks with an ExternalWork producer, so no CPU thread blocks on the GPU. Identical outputs.</p></div>
       <div class="card"><span class="tag t-amber">2 commits · tracker hits</span><h3>OT rechits on demand</h3><p>The pixel tracks' outer-tracker hits made from their cluster keys, instead of from the full legacy rechit collection. Off by default in existing menus.</p></div>
     </div>
   </div>
@@ -492,35 +491,12 @@ carry the new keys.</pre>
     <div class="table-wrap"><table class="files"><thead><tr><th>File</th><th>Added</th><th>Removed</th></tr></thead><tbody><tr><td class='path'>RecoTracker/PixelTrackFitting/plugins/BuildFile.xml</td><td class='n'>+4</td><td class='n'>−0</td></tr><tr><td class='path'>RecoTracker/PixelTrackFitting/plugins/PixelTrackProducerFromSoAAlpaka.cc</td><td class='n'>+77</td><td class='n'>−19</td></tr></tbody></table></div>
   </div></details>
 </article>
-<article class="commit k-lst">
-  <div class="c-head"><span class="tag t-green">LST</span><span class="c-lines">+351 −170 · 5 files</span></div>
-  <h3>LSTCore: asynchronous run</h3>
-  <p>LST&#x27;s run is split into tasks around its host reads of device counts, so no CPU thread waits on the GPU. Same kernels, same order, identical outputs.</p>
-  <details><summary>Commit message and files</summary><div class="dbody">
-    <p class="mono-s">62e56692a8d · LSTCore: asynchronous run of LST</p>
-    <pre class="msg">LST::run is split into tasks between its host reads of device counts, which come back through pinned host copies, so
-no thread waits on the queue; an exception in a task ends the event with that exception. Same kernels, same order,
-identical outputs.</pre>
-    <div class="table-wrap"><table class="files"><thead><tr><th>File</th><th>Added</th><th>Removed</th></tr></thead><tbody><tr><td class='path'>RecoTracker/LSTCore/interface/LSTTask.h</td><td class='n'>+65</td><td class='n'>−0</td></tr><tr><td class='path'>RecoTracker/LSTCore/interface/alpaka/LST.h</td><td class='n'>+24</td><td class='n'>−1</td></tr><tr><td class='path'>RecoTracker/LSTCore/src/alpaka/LST.cc</td><td class='n'>+172</td><td class='n'>−114</td></tr><tr><td class='path'>RecoTracker/LSTCore/src/alpaka/LSTEvent.dev.cc</td><td class='n'>+53</td><td class='n'>−42</td></tr><tr><td class='path'>RecoTracker/LSTCore/src/alpaka/LSTEvent.h</td><td class='n'>+37</td><td class='n'>−13</td></tr></tbody></table></div>
-  </div></details>
-</article>
-<article class="commit k-lst">
-  <div class="c-head"><span class="tag t-green">LST</span><span class="c-lines">+152 −0 · 1 files</span></div>
-  <h3>LST: asynchronous producer</h3>
-  <p>The ExternalWork form of LSTProducer that uses the asynchronous run.</p>
-  <details><summary>Commit message and files</summary><div class="dbody">
-    <p class="mono-s">f7c81ba3e4e · LST: asynchronous producer</p>
-    <pre class="msg">LSTAsyncProducer is the ExternalWork form of LSTProducer: it runs the asynchronous LST::run, so no TBB thread waits on
-the device during LST.</pre>
-    <div class="table-wrap"><table class="files"><thead><tr><th>File</th><th>Added</th><th>Removed</th></tr></thead><tbody><tr><td class='path'>RecoTracker/LST/plugins/alpaka/LSTAsyncProducer.cc</td><td class='n'>+152</td><td class='n'>−0</td></tr></tbody></table></div>
-  </div></details>
-</article>
 <article class="commit k-pkg">
   <div class="c-head"><span class="tag t-blue">MkFitAlpaka package</span><span class="c-lines">+108 −0 · 6 files</span></div>
   <h3>Device dictionaries</h3>
   <p>The CUDA and ROCm dictionaries of the new products, kept in a package without device code.</p>
   <details><summary>Commit message and files</summary><div class="dbody">
-    <p class="mono-s">42f96274805 · MkFitAlpakaFormats: device dictionaries of the MkFitAlpaka products</p>
+    <p class="mono-s">2558f2c8132 · MkFitAlpakaFormats: device dictionaries of the MkFitAlpaka products</p>
     <pre class="msg">The CUDA and ROCm dictionaries of the portable MkFitAlpaka collections, in a package without device code: dictionaries in the kernel library break the plugins&#x27; kernel launches.</pre>
     <div class="table-wrap"><table class="files"><thead><tr><th>File</th><th>Added</th><th>Removed</th></tr></thead><tbody><tr><td class='path'>RecoTracker/MkFitAlpakaFormats/BuildFile.xml</td><td class='n'>+12</td><td class='n'>−0</td></tr><tr><td class='path'>RecoTracker/MkFitAlpakaFormats/README.txt</td><td class='n'>+12</td><td class='n'>−0</td></tr><tr><td class='path'>RecoTracker/MkFitAlpakaFormats/src/alpaka/classes_cuda.h</td><td class='n'>+14</td><td class='n'>−0</td></tr><tr><td class='path'>RecoTracker/MkFitAlpakaFormats/src/alpaka/classes_cuda_def.xml</td><td class='n'>+28</td><td class='n'>−0</td></tr><tr><td class='path'>RecoTracker/MkFitAlpakaFormats/src/alpaka/classes_rocm.h</td><td class='n'>+14</td><td class='n'>−0</td></tr><tr><td class='path'>RecoTracker/MkFitAlpakaFormats/src/alpaka/classes_rocm_def.xml</td><td class='n'>+28</td><td class='n'>−0</td></tr></tbody></table></div>
   </div></details>
@@ -530,7 +506,7 @@ the device during LST.</pre>
   <h3>Data formats, Matriplex and propagation</h3>
   <p>The layouts of hits, candidates and tracks, and the portable math: Matriplex, propagation, material and Kalman update, with MkFitCore&#x27;s API and element order.</p>
   <details><summary>Commit message and files</summary><div class="dbody">
-    <p class="mono-s">c2b78b8e16e · Portable mkFit: data formats, Matriplex and propagation</p>
+    <p class="mono-s">ef8f8172523 · Portable mkFit: data formats, Matriplex and propagation</p>
     <pre class="msg">The SoA layouts and products of the device mkFit chain (hits, candidates, tracks, status counters),
 the portable Matriplex with the MkFitCore API and element order, and the propagation, material and
 Kalman-update functions transliterated from MkFitCore. One code for the GPU and CPU backends; the
@@ -543,7 +519,7 @@ CPU backends get the MkFitCore floating-point flags.</pre>
   <h3>Geometry, configuration and navigation tables</h3>
   <p>EventSetup products: per-layer and per-module geometry and material, the flattened LST-step configuration, the module table and the flat navigation tables.</p>
   <details><summary>Commit message and files</summary><div class="dbody">
-    <p class="mono-s">6a9ee7f2b9e · Portable mkFit: device geometry, iteration config and navigation tables</p>
+    <p class="mono-s">5b44cb8825b · Portable mkFit: device geometry, iteration config and navigation tables</p>
     <pre class="msg">The ES products of the device chain: per-layer and per-module geometry and material, the flattened
 iteration configuration of the LST step, the OT module table, and the flat layer tables with the
 portable compatibleLayers / compatibleDets search used for the missing-hit navigation. Built once
@@ -556,7 +532,7 @@ per IOV from MkFitGeometry and the navigation school.</pre>
   <h3>Hit input and EventOfHits</h3>
   <p>Hits built on the device from the pixel and OT rechits and binned in MkFitCore&#x27;s LayerOfHits order; the OT rechits themselves are made on the device.</p>
   <details><summary>Commit message and files</summary><div class="dbody">
-    <p class="mono-s">b794e2d2521 · Portable mkFit: hit input and EventOfHits</p>
+    <p class="mono-s">ee4f1052688 · Portable mkFit: hit input and EventOfHits</p>
     <pre class="msg">The device EventOfHits: hits built on the device from the pixel rechit SoA and the device OT
 rechits, binned in the MkFitCore LayerOfHits order. The OT rechits are made on the device from the
 clusters (also the CA OT hit SoA); the pixel cluster index map comes from the EventOfHits and a
@@ -569,7 +545,7 @@ size-only map replaces the OT hit converter.</pre>
   <h3>Seeds and the LST hand-off</h3>
   <p>LST&#x27;s input made on the GPU: the pixel seeds refitted from Patatrack&#x27;s tracks, so they no longer pass through the CPU. Also seed cleaning, the seed-state fit, and the hand-off from LST candidates to mkFit seeds, all on the device.</p>
   <details><summary>Commit message and files</summary><div class="dbody">
-    <p class="mono-s">b33363101bd · Portable mkFit: seeds and the LST hand-off</p>
+    <p class="mono-s">ef4d32bb26f · Portable mkFit: seeds and the LST hand-off</p>
     <pre class="msg">Seed import and cleaning on the device, the device fit of the LST seed states, the device LST
 input with the pLS parameters from the pixel-track hits, and the device seed hand-off that makes
 the mkFit seeds from the LST candidates without a host copy.</pre>
@@ -581,7 +557,7 @@ the mkFit seeds from the LST candidates without a host copy.</pre>
   <h3>Track building</h3>
   <p>The clone engine with hit selection, backward search and backward fit, quality filters and duplicate cleaning, with fixed capacities and overflow counters. Deterministic.</p>
   <details><summary>Commit message and files</summary><div class="dbody">
-    <p class="mono-s">cd614451b05 · Portable mkFit: track building</p>
+    <p class="mono-s">6e9ff4b3b51 · Portable mkFit: track building</p>
     <pre class="msg">The clone engine with hit selection, the backward search and backward fit, the quality filters and
 the duplicate cleaning of the LST step on the device, with fixed capacities and overflow counters;
 deterministic.</pre>
@@ -593,7 +569,7 @@ deterministic.</pre>
   <h3>Final fit</h3>
   <p>mkFit&#x27;s final fit on the device, with the track-angle pixel CPE and the outlier rules listed in the deviations.</p>
   <details><summary>Commit message and files</summary><div class="dbody">
-    <p class="mono-s">ef7f8e5f52d · Portable mkFit: final fit</p>
+    <p class="mono-s">d5be89fc609 · Portable mkFit: final fit</p>
     <pre class="msg">mkFit&#x27;s final fit on the device on the building output, with the PixelCPEGeneric track-angle CPE and
 the outlier rules listed in doc/DEVIATIONS.txt.</pre>
     <div class="table-wrap"><table class="files"><thead><tr><th>File</th><th>Added</th><th>Removed</th></tr></thead><tbody><tr><td class='path'>RecoTracker/MkFitAlpaka/interface/fit/CpeESData.h</td><td class='n'>+102</td><td class='n'>−0</td></tr><tr><td class='path'>RecoTracker/MkFitAlpaka/interface/fit/CpeGeneric.h</td><td class='n'>+268</td><td class='n'>−0</td></tr><tr><td class='path'>RecoTracker/MkFitAlpaka/interface/fit/HitStateDev.h</td><td class='n'>+23</td><td class='n'>−0</td></tr><tr><td class='path'>RecoTracker/MkFitAlpaka/plugins/alpaka/MkFitAlpakaClusterCpeFill.h</td><td class='n'>+100</td><td class='n'>−0</td></tr><tr><td class='path'>RecoTracker/MkFitAlpaka/plugins/alpaka/MkFitAlpakaFitCpeESProducer.cc</td><td class='n'>+58</td><td class='n'>−0</td></tr><tr><td class='path'>RecoTracker/MkFitAlpaka/plugins/alpaka/MkFitAlpakaFitCpeTables.h</td><td class='n'>+279</td><td class='n'>−0</td></tr><tr><td class='path'>RecoTracker/MkFitAlpaka/plugins/alpaka/MkFitAlpakaFitCpeTypelookup.cc</td><td class='n'>+4</td><td class='n'>−0</td></tr><tr><td class='path'>RecoTracker/MkFitAlpaka/plugins/alpaka/MkFitAlpakaFitDeviceProducer.cc</td><td class='n'>+421</td><td class='n'>−0</td></tr><tr><td class='path'>RecoTracker/MkFitAlpaka/src/alpaka/FitHandoff.dev.cc</td><td class='n'>+77</td><td class='n'>−0</td></tr><tr><td class='path'>RecoTracker/MkFitAlpaka/src/alpaka/FitTracks.dev.cc</td><td class='n'>+138</td><td class='n'>−0</td></tr><tr><td class='path'>RecoTracker/MkFitAlpaka/src/alpaka/fit/FitKernels.h</td><td class='n'>+949</td><td class='n'>−0</td></tr><tr><td class='path'>RecoTracker/MkFitAlpaka/src/alpaka/fit/FitTracks.h</td><td class='n'>+78</td><td class='n'>−0</td></tr><tr><td class='path'>RecoTracker/MkFitAlpaka/src/fitCpeTypelookup.cc</td><td class='n'>+5</td><td class='n'>−0</td></tr></tbody></table></div>
@@ -604,7 +580,7 @@ the outlier rules listed in doc/DEVIATIONS.txt.</pre>
   <h3>Output conversion, navigation and beam-line state</h3>
   <p>One host conversion to reco::Track. The beam-line state and the missing-hit navigation are computed on the device after the fit.</p>
   <details><summary>Commit message and files</summary><div class="dbody">
-    <p class="mono-s">5fa3179db0f · Portable mkFit: output conversion, navigation and beam-line PCA</p>
+    <p class="mono-s">0cb7b298f9c · Portable mkFit: output conversion, navigation and beam-line PCA</p>
     <pre class="msg">One host conversion of the device tracks to reco::Track. The beam-line PCA state and the missing-hit
 navigation are computed on the device after the fit; calls the portable search cannot decide go to
 the host search.</pre>
@@ -612,15 +588,15 @@ the host search.</pre>
   </div></details>
 </article>
 <article class="commit k-pkg">
-  <div class="c-head"><span class="tag t-blue">MkFitAlpaka package</span><span class="c-lines">+656 −0 · 1 files</span></div>
+  <div class="c-head"><span class="tag t-blue">MkFitAlpaka package</span><span class="c-lines">+643 −0 · 1 files</span></div>
   <h3>Menu configuration</h3>
   <p>Puts the chain into the Phase-2 HLT menu, keeping the module labels, and checks the menu is inside the supported configuration.</p>
   <details><summary>Commit message and files</summary><div class="dbody">
-    <p class="mono-s">c3be2e80e55 · Portable mkFit: menu customise</p>
+    <p class="mono-s">78902f055e9 · Portable mkFit: menu customise</p>
     <pre class="msg">customizeHLTforMkFitAlpaka puts the chain into the Phase-2 HLT menu (with procModifier
 trackingMkFitFit), keeping the module labels; it checks that the menu modules are inside the
 supported configuration.</pre>
-    <div class="table-wrap"><table class="files"><thead><tr><th>File</th><th>Added</th><th>Removed</th></tr></thead><tbody><tr><td class='path'>RecoTracker/MkFitAlpaka/python/customizeHLTforMkFitAlpaka.py</td><td class='n'>+656</td><td class='n'>−0</td></tr></tbody></table></div>
+    <div class="table-wrap"><table class="files"><thead><tr><th>File</th><th>Added</th><th>Removed</th></tr></thead><tbody><tr><td class='path'>RecoTracker/MkFitAlpaka/python/customizeHLTforMkFitAlpaka.py</td><td class='n'>+643</td><td class='n'>−0</td></tr></tbody></table></div>
   </div></details>
 </article>
 <article class="commit k-pkg">
@@ -628,7 +604,7 @@ supported configuration.</pre>
   <h3>Unit tests</h3>
   <p>Propagation and Kalman update against MkFitCore on every backend, the EventSetup data fill, the register-spill check and a plugin canary kernel.</p>
   <details><summary>Commit message and files</summary><div class="dbody">
-    <p class="mono-s">c1be262bb46 · Portable mkFit: unit tests</p>
+    <p class="mono-s">eeab46232c6 · Portable mkFit: unit tests</p>
     <pre class="msg">Propagation and Kalman update of the port against MkFitCore on synthetic tracks (every backend), the
 ES data fill on a synthetic geometry, the register-spill check of the CUDA kernels, and a canary
 kernel of a plugin library that fills the event products. None of it is used by the menu.</pre>
@@ -636,14 +612,14 @@ kernel of a plugin library that fills the event products. None of it is used by 
   </div></details>
 </article>
 <article class="commit k-pkg">
-  <div class="c-head"><span class="tag t-blue">MkFitAlpaka package</span><span class="c-lines">+332 −0 · 3 files</span></div>
+  <div class="c-head"><span class="tag t-blue">MkFitAlpaka package</span><span class="c-lines">+320 −0 · 3 files</span></div>
   <h3>Documentation</h3>
   <p>The physics differences to mkFit for the mkFit developers, the physics-neutral simplifications, and the changes needed in other packages.</p>
   <details><summary>Commit message and files</summary><div class="dbody">
-    <p class="mono-s">1e1399fec57 · Portable mkFit: documentation</p>
+    <p class="mono-s">08bf9a498ae · Portable mkFit: documentation</p>
     <pre class="msg">The physics differences to the reference mkFit for the mkFit developers, the physics-neutral
 simplifications, and the changes in other packages the menu needs.</pre>
-    <div class="table-wrap"><table class="files"><thead><tr><th>File</th><th>Added</th><th>Removed</th></tr></thead><tbody><tr><td class='path'>RecoTracker/MkFitAlpaka/doc/DEVIATIONS.txt</td><td class='n'>+117</td><td class='n'>−0</td></tr><tr><td class='path'>RecoTracker/MkFitAlpaka/doc/LOCAL_PATCHES.txt</td><td class='n'>+25</td><td class='n'>−0</td></tr><tr><td class='path'>RecoTracker/MkFitAlpaka/doc/SIMPLIFICATIONS.txt</td><td class='n'>+190</td><td class='n'>−0</td></tr></tbody></table></div>
+    <div class="table-wrap"><table class="files"><thead><tr><th>File</th><th>Added</th><th>Removed</th></tr></thead><tbody><tr><td class='path'>RecoTracker/MkFitAlpaka/doc/DEVIATIONS.txt</td><td class='n'>+117</td><td class='n'>−0</td></tr><tr><td class='path'>RecoTracker/MkFitAlpaka/doc/LOCAL_PATCHES.txt</td><td class='n'>+13</td><td class='n'>−0</td></tr><tr><td class='path'>RecoTracker/MkFitAlpaka/doc/SIMPLIFICATIONS.txt</td><td class='n'>+190</td><td class='n'>−0</td></tr></tbody></table></div>
   </div></details>
 </article>
 <article class="commit k-pkg">
@@ -651,7 +627,7 @@ simplifications, and the changes in other packages the menu needs.</pre>
   <h3>Process modifier trackingMkFitAlpaka</h3>
   <p>Switches the chain on in the Phase-2 HLT menus; with the modifier off the menus are unchanged.</p>
   <details><summary>Commit message and files</summary><div class="dbody">
-    <p class="mono-s">e8be62b67e8 · Process modifier trackingMkFitAlpaka for the Alpaka mkFit HLT chain</p>
+    <p class="mono-s">aea1b7b7bd2 · Process modifier trackingMkFitAlpaka for the Alpaka mkFit HLT chain</p>
     <pre class="msg">With --procModifiers trackingMkFitFit,trackingMkFitAlpaka the HLT_75e33 menus apply customizeHLTforMkFitAlpaka through a
 ProcessModifier once the menu is loaded, so workflows that only take process modifiers can run the chain. With the
 modifier off the menus are unchanged; the customise can still be applied with --customise and returns early when the
@@ -881,14 +857,14 @@ chain is already in the process.</pre>
     <h3 class="devx-title">The pixel seeds for LST are computed on the GPU</h3>
     <p class="devx-short">LST takes each pixel track's position, momentum and their errors from a refit of its hits, today done on the CPU. The port does the same refit on the GPU with the same formulas, using mkFit's propagation. The values agree closely; in the far forward region the pT error comes out a little larger.</p>
     <div class="devx-grid">
-      <div><h4>mkFit today</h4><p>hltInitialStepSeeds refits each pixel track with CMSSW's seed creator, then hltInputLST computes the state at the beam line and the pT and η errors that LST uses. About 19 ms of CPU per event.</p></div>
+      <div><h4>mkFit today</h4><p>hltInitialStepSeeds refits each pixel track with CMSSW's seed creator, then hltInputLST computes the state at the beam line and the pT and η errors that LST uses. About 21 ms of CPU per event.</p></div>
       <div><h4>This PR</h4><p>The same refit per pixel track on the GPU (the creator emulation of DEV-2), the same beam-line state and the same error formulas. A track the creator would reject gives no LST seed, as on the CPU.</p></div>
       <div><h4>Why</h4><p>It is what lets the pixel tracks go straight from Patatrack into LST without a round trip through the CPU (<a href="#seeds">details</a>).</p></div>
       <div><h4>Effect</h4><p>90% of seeds agree within 0.18 mm in position, 0.67 mm in z and 2.6% in pT. Above |η| 2.5 the pT error is about 10% larger, which slightly changes which pixel seeds pass LST's pT cut. Efficiency −0.030 ± 0.030% (ttbar) and −0.035 ± 0.026% (QCD), within errors.</p></div>
     </div>
     <details><summary>Full technical note</summary><div class="dbody"><pre class="msg">pLS parameters from a device emulation of the pixel-seed creator, computed before LST (ON; known regression)
   Reference: hltInitialStepSeeds (SeedGeneratorFromProtoTracksEDProducer + SeedFromConsecutiveHitsCreator on the pixel
-    tracks) -&gt; hltInputLST (state on the last hit, TSCBL, perigee ptError / etaError) -&gt; LST&#x27;s pLS. ~19 ms host.
+    tracks) -&gt; hltInputLST (state on the last hit, TSCBL, perigee ptError / etaError) -&gt; LST&#x27;s pLS. ~21 ms host.
   Port: hltInputLSTDevice does the same per pixel track on the device (DEV-2&#x27;s creator emulation, the device PCA, the
     same error formulas); a device creator failure gives no pLS, as the host creator gives no seed.
   Evidence: pLS fields vs the host: r3PCA q90 0.18 mm, dz q90 0.67 mm, ptPCA q90 2.6%; endcap ptErr wider (|eta| &gt; 2.5:
@@ -1034,9 +1010,9 @@ topIdx[pos] = j;  topScore[pos] = o.score;</pre></div>
       <tbody><tr><td>Outer-tracker rechits</td><td class='n'>23.6</td><td class='n'>5.0</td><td class='n'>0.03</td><td class='n'>769×</td></tr><tr><td>Pixel seeds and LST input</td><td class='n'>15.4</td><td class='n'>3.8</td><td class='n'>0.25</td><td class='n'>61×</td></tr><tr><td>Hits for mkFit (EventOfHits)</td><td class='n'>14.5</td><td class='n'>9.4</td><td class='n'>0.07</td><td class='n'>196×</td></tr><tr><td>Seeds from LST's candidates</td><td class='n'>15.3</td><td class='n'>1.2</td><td class='n'>0.28</td><td class='n'>55×</td></tr><tr><td>Track building</td><td class='n'>25.9</td><td class='n'>26.2</td><td class='n'>2.75</td><td class='n'>9×</td></tr><tr><td>Final fit</td><td class='n'>17.4</td><td class='n'>15.4</td><td class='n'>2.14</td><td class='n'>8×</td></tr><tr><td>Navigation and beam-line state<sup>*</sup></td><td class='n'>13.7</td><td class='n'>11.0</td><td class='n'>1.30</td><td class='n'>11×</td></tr><tr class='hl'><td>Total of these steps</td><td class='n'>125.8</td><td class='n'>72.1</td><td class='n'>6.82</td><td class='n'>18×</td></tr></tbody></table></div>
     <ul class="plain note">
       <li>MkFitCore menu: the trackingMkFitFit menu, everything on the CPU. "The port, CPU" is the port on Alpaka's serial backend, as pushed (<code>e8be62b67e8</code>); its building row also contains the LST seed fit (about 3 ms), which the MkFitCore menu does under "Seeds from LST's candidates".</li>
-      <li>GPU column: kernel execution time only (measured with CUPTI), without launch overhead or CPU-side work. <sup>*</sup>Turning the results into reco::Track objects stays on the CPU, about 7 ms per event in the GPU menu.</li>
+      <li>GPU column: kernel execution time only (measured with CUPTI), without launch overhead or CPU-side work. <sup>*</sup>Turning the results into reco::Track objects stays on the CPU, about 9 ms per event in the GPU menu.</li>
       <li>CPU columns: 80 events, one thread; GPU column: 100 events after a 30-event warm-up. LST itself is unchanged by this PR and is not in the table.</li>
-            <li>The number that counts for the HLT is the whole menu on a busy machine: tracking 288.8 → 26.5 ms per event (4 jobs × 16 threads × 16 streams; <a href="#results">Results</a>).</li>
+            <li>The number that counts for the HLT is the whole menu on a busy machine: tracking 289.5 → 32.7 ms per event (4 jobs × 16 threads × 16 streams, all three menus from one build, mean of two alternating runs; <a href="#results">Results</a>).</li>
     </ul>
     <div class="flow-label" style="margin-top:22px">Inside track building on the GPU: 2.75 ms of kernels per event</div>
     <div class="hbars kern"><div class='hb-lab'>Find compatible hits<small>KernelSelectPrep + KernelSelectScan</small></div><div class='hb-track'><div class='hb c-blue' style='width:calc((100% - 120px) * 1.000)'></div><span class='hb-v'>0.92 ms</span></div><div class='hb-lab'>Keep the best candidates per seed<small>KernelEngineSelect</small></div><div class='hb-track'><div class='hb c-blue' style='width:calc((100% - 120px) * 0.658)'></div><span class='hb-v'>0.61 ms</span></div><div class='hb-lab'>Candidate bookkeeping<small>KernelEngineActivate, BuildList, GatherSeeds, …</small></div><div class='hb-track'><div class='hb c-blue' style='width:calc((100% - 120px) * 0.565)'></div><span class='hb-v'>0.52 ms</span></div><div class='hb-lab'>Kalman update with the chosen hit<small>KernelEngineUpdate</small></div><div class='hb-track'><div class='hb c-blue' style='width:calc((100% - 120px) * 0.285)'></div><span class='hb-v'>0.26 ms</span></div><div class='hb-lab'>chi2 of every compatible hit<small>KernelEngineChi2</small></div><div class='hb-track'><div class='hb c-blue' style='width:calc((100% - 120px) * 0.182)'></div><span class='hb-v'>0.17 ms</span></div><div class='hb-lab'>Accept or reject each option<small>KernelEngineOptions</small></div><div class='hb-track'><div class='hb c-blue' style='width:calc((100% - 120px) * 0.167)'></div><span class='hb-v'>0.15 ms</span></div><div class='hb-lab'>Backward fit<small>BkFitKernel</small></div><div class='hb-track'><div class='hb c-blue' style='width:calc((100% - 120px) * 0.078)'></div><span class='hb-v'>0.07 ms</span></div><div class='hb-lab'>Duplicate cleaning<small>clean::*</small></div><div class='hb-track'><div class='hb c-blue' style='width:calc((100% - 120px) * 0.055)'></div><span class='hb-v'>0.05 ms</span></div></div>
@@ -1049,16 +1025,16 @@ topIdx[pos] = j;  topScore[pos] = o.score;</pre></div>
 <section class="page" id="page-cpu" data-page="cpu" hidden>
   <div class="sheet">
     <header><div class="eyebrow">CPU</div><h2>Why the port is faster on the CPU</h2>
-      <p class="sub">On the CPU menu, the port's tracking chain takes 100.8 ms per event against 168.3 ms for the mkFit-fit menu, which runs MkFitCore. Almost none of that comes from mkFit's own algorithm: track building is 3.4 ms slower here (it also contains the LST seed fit, about 3 ms) and the fit is 3.2 ms faster, so mkFit itself is about even. The gain comes from everything around mkFit.</p></header>
+      <p class="sub">On the CPU menu, the port's tracking chain takes 101.0 ms per event against 172.1 ms for the mkFit-fit menu, which runs MkFitCore. Almost none of that comes from mkFit's own algorithm: track building is 3.2 ms slower here (it also contains the LST seed fit, about 3 ms) and the fit is 3.3 ms faster, so mkFit itself is about even. The gain comes from everything around mkFit.</p></header>
     <div class="grid3">
-      <div class="kpi"><div class="v">−67.5<small>ms</small></div><div class="k">the whole chain</div><div class="d">168.3 → 100.8 ms per event, CPU time</div></div>
-      <div class="kpi"><div class="v">−67.7<small>ms</small></div><div class="k">around mkFit</div><div class="d">rechits, hits, seeds, LST input, output conversion</div></div>
-      <div class="kpi"><div class="v">+0.2<small>ms</small></div><div class="k">mkFit itself</div><div class="d">track building and final fit; about 3 ms of it is the LST seed fit, moved here from the seed step</div></div>
+      <div class="kpi"><div class="v">−71.1<small>ms</small></div><div class="k">the whole chain</div><div class="d">172.1 → 101.0 ms per event, CPU time</div></div>
+      <div class="kpi"><div class="v">−71.0<small>ms</small></div><div class="k">around mkFit</div><div class="d">rechits, hits, seeds, LST input, output conversion</div></div>
+      <div class="kpi"><div class="v">−0.1<small>ms</small></div><div class="k">mkFit itself</div><div class="d">track building and final fit; about 3 ms of it is the LST seed fit, moved here from the seed step</div></div>
     </div>
     <div class="flow-label" style="margin-top:22px">Step by step, ms per event, drawn to scale</div>
     <div class="legend" style="margin-bottom:10px"><span><i class="pr-key-mf"></i>mkFit-fit menu (MkFitCore)</span><span><i class="pr-key-nw"></i>the port</span><span>green: the port is faster · red: slower</span></div>
-    <div class="pairs"><div class='pr-lab'>Outer-tracker rechits</div><div class='pr-bars'><div class='pr-row'><div class='pr-bar mf' style='width:calc((100% - 70px) * 0.837)'></div><span>29.0</span></div><div class='pr-row'><div class='pr-bar nw' style='width:calc((100% - 70px) * 0.173)'></div><span>6.0</span></div></div><div class='pr-d dn'>-23.0</div><div class='pr-lab'>Pixel seeds and LST input</div><div class='pr-bars'><div class='pr-row'><div class='pr-bar mf' style='width:calc((100% - 70px) * 0.606)'></div><span>21.0</span></div><div class='pr-row'><div class='pr-bar nw' style='width:calc((100% - 70px) * 0.149)'></div><span>5.2</span></div></div><div class='pr-d dn'>-15.8</div><div class='pr-lab'>Hits for mkFit (EventOfHits)</div><div class='pr-bars'><div class='pr-row'><div class='pr-bar mf' style='width:calc((100% - 70px) * 0.538)'></div><span>18.6</span></div><div class='pr-row'><div class='pr-bar nw' style='width:calc((100% - 70px) * 0.355)'></div><span>12.3</span></div></div><div class='pr-d dn'>-6.3</div><div class='pr-lab'>Seeds from LST's candidates</div><div class='pr-bars'><div class='pr-row'><div class='pr-bar mf' style='width:calc((100% - 70px) * 0.618)'></div><span>21.4</span></div><div class='pr-row'><div class='pr-bar nw' style='width:calc((100% - 70px) * 0.044)'></div><span>1.5</span></div></div><div class='pr-d dn'>-19.9</div><div class='pr-lab'>Track building</div><div class='pr-bars'><div class='pr-row'><div class='pr-bar mf' style='width:calc((100% - 70px) * 0.902)'></div><span>31.2</span></div><div class='pr-row'><div class='pr-bar nw' style='width:calc((100% - 70px) * 1.000)'></div><span>34.6</span></div></div><div class='pr-d up'>+3.4</div><div class='pr-lab'>Final fit</div><div class='pr-bars'><div class='pr-row'><div class='pr-bar mf' style='width:calc((100% - 70px) * 0.670)'></div><span>23.2</span></div><div class='pr-row'><div class='pr-bar nw' style='width:calc((100% - 70px) * 0.578)'></div><span>20.0</span></div></div><div class='pr-d dn'>-3.2</div><div class='pr-lab'>Output conversion</div><div class='pr-bars'><div class='pr-row'><div class='pr-bar mf' style='width:calc((100% - 70px) * 0.554)'></div><span>19.2</span></div><div class='pr-row'><div class='pr-bar nw' style='width:calc((100% - 70px) * 0.453)'></div><span>15.7</span></div></div><div class='pr-d dn'>-3.5</div><div class='pr-lab'>Pixel tracks to reco::Track</div><div class='pr-bars'><div class='pr-row'><div class='pr-bar mf' style='width:calc((100% - 70px) * 0.137)'></div><span>4.8</span></div><div class='pr-row'><div class='pr-bar nw' style='width:calc((100% - 70px) * 0.160)'></div><span>5.5</span></div></div><div class='pr-d up'>+0.8</div></div>
-    <p class="note">CPU time per event on a busy machine: the HLT layout of 4 jobs × 16 threads × 16 streams, 300 ttbar PU200 events after 50, mean of two rounds, both menus on the CPU (Alpaka's serial backend for the port). Measured on #290 as pushed (<code>e8be62b67e8</code>). LST itself is the same in both menus and not shown (115 / 116 ms).</p>
+    <div class="pairs"><div class='pr-lab'>Outer-tracker rechits</div><div class='pr-bars'><div class='pr-row'><div class='pr-bar mf' style='width:calc((100% - 70px) * 0.860)'></div><span>29.8</span></div><div class='pr-row'><div class='pr-bar nw' style='width:calc((100% - 70px) * 0.177)'></div><span>6.1</span></div></div><div class='pr-d dn'>-23.7</div><div class='pr-lab'>Pixel seeds and LST input</div><div class='pr-bars'><div class='pr-row'><div class='pr-bar mf' style='width:calc((100% - 70px) * 0.598)'></div><span>20.7</span></div><div class='pr-row'><div class='pr-bar nw' style='width:calc((100% - 70px) * 0.149)'></div><span>5.2</span></div></div><div class='pr-d dn'>-15.5</div><div class='pr-lab'>Hits for mkFit (EventOfHits)</div><div class='pr-bars'><div class='pr-row'><div class='pr-bar mf' style='width:calc((100% - 70px) * 0.544)'></div><span>18.8</span></div><div class='pr-row'><div class='pr-bar nw' style='width:calc((100% - 70px) * 0.356)'></div><span>12.3</span></div></div><div class='pr-d dn'>-6.5</div><div class='pr-lab'>Seeds from LST's candidates</div><div class='pr-bars'><div class='pr-row'><div class='pr-bar mf' style='width:calc((100% - 70px) * 0.697)'></div><span>24.1</span></div><div class='pr-row'><div class='pr-bar nw' style='width:calc((100% - 70px) * 0.044)'></div><span>1.5</span></div></div><div class='pr-d dn'>-22.6</div><div class='pr-lab'>Track building</div><div class='pr-bars'><div class='pr-row'><div class='pr-bar mf' style='width:calc((100% - 70px) * 0.908)'></div><span>31.4</span></div><div class='pr-row'><div class='pr-bar nw' style='width:calc((100% - 70px) * 1.000)'></div><span>34.6</span></div></div><div class='pr-d up'>+3.2</div><div class='pr-lab'>Final fit</div><div class='pr-bars'><div class='pr-row'><div class='pr-bar mf' style='width:calc((100% - 70px) * 0.676)'></div><span>23.4</span></div><div class='pr-row'><div class='pr-bar nw' style='width:calc((100% - 70px) * 0.581)'></div><span>20.1</span></div></div><div class='pr-d dn'>-3.3</div><div class='pr-lab'>Output conversion</div><div class='pr-bars'><div class='pr-row'><div class='pr-bar mf' style='width:calc((100% - 70px) * 0.552)'></div><span>19.1</span></div><div class='pr-row'><div class='pr-bar nw' style='width:calc((100% - 70px) * 0.452)'></div><span>15.6</span></div></div><div class='pr-d dn'>-3.5</div><div class='pr-lab'>Pixel tracks to reco::Track</div><div class='pr-bars'><div class='pr-row'><div class='pr-bar mf' style='width:calc((100% - 70px) * 0.138)'></div><span>4.8</span></div><div class='pr-row'><div class='pr-bar nw' style='width:calc((100% - 70px) * 0.159)'></div><span>5.5</span></div></div><div class='pr-d up'>+0.7</div></div>
+    <p class="note">CPU time per event on a busy machine: the HLT layout of 4 jobs × 16 threads × 16 streams, 300 ttbar PU200 events after 50, mean of two alternating runs, both menus on the CPU and from one build (Alpaka's serial backend for the port). Measured on the #290 PR head. LST itself is the same in both menus and not shown (116 / 117 ms).</p>
   </div>
 
   <div class="sheet">
@@ -1073,7 +1049,7 @@ topIdx[pos] = j;  topScore[pos] = o.score;</pre></div>
   <div class="sheet">
     <header><div class="eyebrow">Detail</div><h2>Each step</h2><p class="sub">Module names in <code>code</code>; times are from the chart above.</p></header>
         <article class="cstep">
-      <div class="cstep-head"><h3>Outer-tracker rechits</h3><span class="cstep-n">29.0 → 6.0 ms</span></div>
+      <div class="cstep-head"><h3>Outer-tracker rechits</h3><span class="cstep-n">29.8 → 6.1 ms</span></div>
       <div class="cstep-grid">
         <div><h4>mkFit-fit menu</h4><p><code>hltSiPhase2RecHits</code> makes a legacy rechit object for every outer-tracker cluster, through the Phase-2 strip CPE interface. <code>hltPhase2OtRecHitsSoA</code> then copies them into the flat format the pixel-track finder reads; LST's input packer reads the legacy objects.</p></div>
         <div><h4>The port</h4><p><code>hltMkFitAlpakaOTRecHits</code> computes every cluster's position and error directly into the flat format, using a per-module table built once per run. The pixel-track finder, LST's input and mkFit's hits all read that. Legacy rechits are made only for the few hits pixel tracks attach (see the last row).</p></div>
@@ -1081,7 +1057,7 @@ topIdx[pos] = j;  topScore[pos] = o.score;</pre></div>
       </div>
     </article>
     <article class="cstep">
-      <div class="cstep-head"><h3>Pixel seeds and LST input</h3><span class="cstep-n">21.0 → 5.2 ms</span></div>
+      <div class="cstep-head"><h3>Pixel seeds and LST input</h3><span class="cstep-n">20.7 → 5.2 ms</span></div>
       <div class="cstep-grid">
         <div><h4>mkFit-fit menu</h4><p><code>hltInitialStepSeeds</code> runs CMSSW's seed creator on every pixel track: a helix through three hits, then a Kalman fit over the hits with CMSSW's propagator, re-running the CPE on each hit, into a TrajectorySeed object. <code>hltInputLST</code> then computes the state at the beam line and packs LST's input.</p></div>
         <div><h4>The port</h4><p><code>hltInputLSTDevice</code> does the same refit for every pixel track with mkFit's matrix code, 8 tracks at a time, computes the beam-line state, and writes LST's input directly (<a href="#dev-7">DEV-7</a>).</p></div>
@@ -1089,7 +1065,7 @@ topIdx[pos] = j;  topScore[pos] = o.score;</pre></div>
       </div>
     </article>
     <article class="cstep">
-      <div class="cstep-head"><h3>Hits for mkFit</h3><span class="cstep-n">18.6 → 12.3 ms</span></div>
+      <div class="cstep-head"><h3>Hits for mkFit</h3><span class="cstep-n">18.8 → 12.3 ms</span></div>
       <div class="cstep-grid">
         <div><h4>mkFit-fit menu</h4><p><code>hltMkFitSiPixelHits</code> and <code>hltMkFitSiPhase2Hits</code> convert the legacy pixel and outer-tracker rechits into mkFit hits; <code>hltMkFitEventOfHits</code> sorts them into mkFit's per-layer bins.</p></div>
         <div><h4>The port</h4><p><code>hltMkFitEventOfHits</code> fills mkFit's hits and bins straight from the flat pixel and outer-tracker arrays. (<code>hltMkFitSiPhase2Hits</code> here only keeps a cluster-index map.)</p></div>
@@ -1097,7 +1073,7 @@ topIdx[pos] = j;  topScore[pos] = o.score;</pre></div>
       </div>
     </article>
     <article class="cstep">
-      <div class="cstep-head"><h3>Seeds from LST's candidates</h3><span class="cstep-n">21.4 → 1.5 ms</span></div>
+      <div class="cstep-head"><h3>Seeds from LST's candidates</h3><span class="cstep-n">24.1 → 1.5 ms</span></div>
       <div class="cstep-grid">
         <div><h4>mkFit-fit menu</h4><p><code>hltInitialStepTrajectorySeedsLST</code> turns every LST candidate into a CMSSW TrajectorySeed with the same seed creator (helix, Kalman fit with CMSSW's propagator); <code>hltInitialStepMkFitSeeds</code> converts those into mkFit seeds.</p></div>
         <div><h4>The port</h4><p><code>hltInitialStepMkFitSeeds</code> hands LST's candidates to mkFit directly (<a href="#dev-8">DEV-8</a>). Their starting state is fitted inside the building step with mkFit's matrix code, 8 at a time (about 3 ms, counted under building; <a href="#dev-2">DEV-2</a>).</p></div>
@@ -1105,7 +1081,7 @@ topIdx[pos] = j;  topScore[pos] = o.score;</pre></div>
       </div>
     </article>
     <article class="cstep slower">
-      <div class="cstep-head"><h3>Track building</h3><span class="cstep-n">31.2 → 34.6 ms</span></div>
+      <div class="cstep-head"><h3>Track building</h3><span class="cstep-n">31.4 → 34.6 ms</span></div>
       <div class="cstep-grid">
         <div><h4>mkFit-fit menu</h4><p><code>hltInitialStepTrackCandidatesMkFit</code>: MkFitCore's building.</p></div>
         <div><h4>The port</h4><p><code>hltInitialStepTrackCandidatesMkFitDevice</code>: the same algorithm, organised for the GPU, plus the LST seed fit moved here (about 3 ms).</p></div>
@@ -1113,7 +1089,7 @@ topIdx[pos] = j;  topScore[pos] = o.score;</pre></div>
       </div>
     </article>
     <article class="cstep">
-      <div class="cstep-head"><h3>Final fit</h3><span class="cstep-n">23.2 → 20.0 ms</span></div>
+      <div class="cstep-head"><h3>Final fit</h3><span class="cstep-n">23.4 → 20.1 ms</span></div>
       <div class="cstep-grid">
         <div><h4>mkFit-fit menu</h4><p><code>hltInitialStepTrackCandidatesMkFitFit</code>: MkFitCore's final fit, 8 tracks per vector instruction.</p></div>
         <div><h4>The port</h4><p><code>hltInitialStepTrackCandidatesMkFitFitDevice</code>: the same fit, 8 tracks at a time, plus the extra outlier rounds of <a href="#dev-3">DEV-3</a> and <a href="#dev-10">DEV-10</a>.</p></div>
@@ -1121,7 +1097,7 @@ topIdx[pos] = j;  topScore[pos] = o.score;</pre></div>
       </div>
     </article>
     <article class="cstep">
-      <div class="cstep-head"><h3>Output conversion</h3><span class="cstep-n">19.2 → 15.7 ms</span></div>
+      <div class="cstep-head"><h3>Output conversion</h3><span class="cstep-n">19.1 → 15.6 ms</span></div>
       <div class="cstep-grid">
         <div><h4>mkFit-fit menu</h4><p><code>hltInitialStepTracks</code> finds, for every track, the layers it crossed without a hit using the detector-layer classes, computes the state at the beam line, and builds the reco::Track.</p></div>
         <div><h4>The port</h4><p>The layer search uses flat per-layer tables built once per run, and falls back to the detector-layer classes only where the flat search cannot decide. The beam-line state comes from <code>hltInitialStepOutConvStates</code>; <code>hltInitialStepTracks</code> builds the reco::Tracks.</p></div>
@@ -1164,7 +1140,7 @@ topIdx[pos] = j;  topScore[pos] = o.score;</pre></div>
       </tbody></table></div>
     <ul class="plain note">
       <li>How these were measured: each operation's share of its module comes from a sampling profile with full call stacks (about 96,000 samples per code, 80 ttbar PU200 events); the module's time comes from a run without the profiler. The port's column is #290 as pushed (<code>e8be62b67e8</code>); MkFitCore's code and column are unchanged. Rows above 3 ms carry about ±5–10% statistical error, rows near 1 ms up to ±30%. MkFitCore's rows add up to its module within those errors; the port's bookkeeping row is the rest of its module.</li>
-      <li>On a busy machine (the HLT layout, chart above) the building gap looks larger: 31.2 vs 34.6 ms. That is not a greater load sensitivity of the port: MkFitCore splits its building across otherwise idle CPU threads, whose time is not charged to its module (about 3.4 ms per event at the HLT layout; with that switched off, its building measures 33.1 instead of 29.7 ms on the same events), and on the same events both codes slow down by the same factor under load (lower clock, less cache per thread). The port runs each event's building on one thread.</li>
+      <li>On a busy machine (the HLT layout, chart above) the building gap looks larger: 31.4 vs 34.6 ms. That is not a greater load sensitivity of the port: MkFitCore splits its building across otherwise idle CPU threads, whose time is not charged to its module (about 3.4 ms per event at the HLT layout: with that switched off, its building measures 33.1 instead of 29.7 ms on the same events), and on the same events both codes slow down by the same factor under load (lower clock, less cache per thread). The port runs each event's building on one thread.</li>
     </ul>
   </div>
 
@@ -1180,15 +1156,15 @@ topIdx[pos] = j;  topScore[pos] = o.score;</pre></div>
 <!-- ======================= RESULTS ======================= -->
 <section class="page" id="page-results" data-page="results" hidden>
   <div class="sheet">
-    <header><div class="eyebrow">Timing</div><h2>Phase-2 HLT GPU menu</h2><p class="sub">4 jobs × 16 threads × 16 streams on one L40, ttbar PU200, the CI's module grouping; milliseconds of CPU time per event.</p></header>
+    <header><div class="eyebrow">Timing</div><h2>Phase-2 HLT GPU menu</h2><p class="sub">4 jobs × 16 threads × 16 streams on one L40, ttbar PU200, the CI's module grouping; all three menus from one build, mean of two alternating runs; milliseconds of CPU time per event.</p></header>
     <div class="table-wrap"><table>
       <thead><tr><th>Menu</th><th class="n">Tracking</th><th class="n">vs KF</th><th class="n">Events/s</th><th class="n">Idle per event</th><th class="n">GPU memory (4 jobs)</th></tr></thead>
       <tbody>
-        <tr><td>KF fit (default menu)</td><td class="n">288.8 ms</td><td class="n">–</td><td class="n">27.2</td><td class="n">93 ms</td><td class="n">10.1 GB</td></tr>
-        <tr><td>mkFit fit (trackingMkFitFit menu)</td><td class="n">184.0 ms</td><td class="n">−36%</td><td class="n">28.5</td><td class="n">90 ms</td><td class="n">10.3 GB</td></tr>
-        <tr class="hl"><td>This PR</td><td class="n">26.5 ms</td><td class="n">−91%</td><td class="n">30.3</td><td class="n">98 ms</td><td class="n">11.8 GB</td></tr>
+        <tr><td>KF fit (default menu)</td><td class="n">289.5 ms</td><td class="n">–</td><td class="n">27.3</td><td class="n">77 ms</td><td class="n">10.3 GB</td></tr>
+        <tr><td>mkFit fit (trackingMkFitFit menu)</td><td class="n">187.8 ms</td><td class="n">−35%</td><td class="n">28.4</td><td class="n">80 ms</td><td class="n">10.4 GB</td></tr>
+        <tr class="hl"><td>This PR</td><td class="n">32.7 ms</td><td class="n">−89%</td><td class="n">30.5</td><td class="n">87 ms</td><td class="n">11.4 GB</td></tr>
       </tbody></table></div>
-    <p class="note">On the CPU menu (serial backend) tracking is 223 ms, vs 290 for the mkFit-fit menu and 396 for KF (re-measured on #290 as pushed). GPU memory is the peak of the four jobs' summed device memory and varies by about ±0.4 GB between runs.</p>
+    <p class="note">On the CPU menu (serial backend, same build, mean of two alternating runs) tracking is 223 ms, vs 295 for the mkFit-fit menu and 400 for KF. GPU memory is the peak of the four jobs' summed device memory and varies by about ±0.4 GB between runs.</p>
   </div>
 
   <div class="sheet">
@@ -1200,16 +1176,16 @@ topIdx[pos] = j;  topScore[pos] = o.score;</pre></div>
     <div class="table-wrap"><table>
       <thead><tr><th>Stage</th><th class="n">mkFit-fit menu, CPU</th><th class="n">This PR, CPU backend</th><th class="n">This PR, GPU backend: CPU time left on the host</th></tr></thead>
       <tbody>
-        <tr><td>OT rechits</td><td class="n">29.0</td><td class="n">6.0</td><td class="n">0.6</td></tr>
-        <tr><td>Pixel seeds + LST input</td><td class="n">21.0</td><td class="n">5.2</td><td class="n">0.4</td></tr>
-        <tr><td>mkFit hits + EventOfHits</td><td class="n">18.6</td><td class="n">12.3</td><td class="n">2.0</td></tr>
-        <tr><td>mkFit seeds from the LST track candidates</td><td class="n">21.4</td><td class="n">1.5</td><td class="n">0.4</td></tr>
-        <tr><td>Track building</td><td class="n">31.2</td><td class="n">34.6*</td><td class="n">1.2</td></tr>
-        <tr><td>Final fit</td><td class="n">23.2</td><td class="n">20.0</td><td class="n">0.8</td></tr>
-        <tr><td>Output conversion (navigation, beam-line state, reco::Track)</td><td class="n">19.2</td><td class="n">15.7</td><td class="n">9.3</td></tr>
-        <tr class="hl"><td>Total</td><td class="n">163.6</td><td class="n">95.3</td><td class="n">14.8</td></tr>
+        <tr><td>OT rechits</td><td class="n">29.8</td><td class="n">6.1</td><td class="n">0.6</td></tr>
+        <tr><td>Pixel seeds + LST input</td><td class="n">20.7</td><td class="n">5.2</td><td class="n">0.4</td></tr>
+        <tr><td>mkFit hits + EventOfHits</td><td class="n">18.8</td><td class="n">12.3</td><td class="n">2.1</td></tr>
+        <tr><td>mkFit seeds from the LST track candidates</td><td class="n">24.1</td><td class="n">1.5</td><td class="n">0.4</td></tr>
+        <tr><td>Track building</td><td class="n">31.4</td><td class="n">34.6*</td><td class="n">1.1</td></tr>
+        <tr><td>Final fit</td><td class="n">23.4</td><td class="n">20.1</td><td class="n">0.8</td></tr>
+        <tr><td>Output conversion (navigation, beam-line state, reco::Track)</td><td class="n">19.1</td><td class="n">15.6</td><td class="n">9.4</td></tr>
+        <tr class="hl"><td>Total</td><td class="n">167.3</td><td class="n">95.5</td><td class="n">14.9</td></tr>
       </tbody></table></div>
-    <p class="note">*The CPU building row also contains the LST seed-state fit (about 3 ms), which the mkFit-fit menu does in its seed converter. MkFitCore's building also hands part of its work to otherwise idle threads, which is not charged to its row (about 3 ms at this layout). Measured on #290 as pushed (<code>e8be62b67e8</code>, which includes the CPU vectorisation and the 7 October building fixes), two rounds; the GPU column from one round. The GPU's own kernel time for the whole chain is about 7 ms per event; see <a href="#parallel">How it runs</a>.</p>
+    <p class="note">*The CPU building row also contains the LST seed-state fit (about 3 ms), which the mkFit-fit menu does in its seed converter. MkFitCore's building also hands part of its work to otherwise idle threads, which is not charged to its row (about 3 ms at this layout). Measured on the #290 PR head (which includes the CPU vectorisation and the 7 October building fixes); all three columns from one build, mean of two alternating runs. The GPU's own kernel time for the whole chain is about 7 ms per event; see <a href="#parallel">How it runs</a>.</p>
   </div>
 
   <div class="sheet">
@@ -1287,47 +1263,44 @@ topIdx[pos] = j;  topScore[pos] = o.score;</pre></div>
   </div>
 
   <div class="sheet">
-    <header><div class="eyebrow">The PRs</div><h2>Two tracks, seven PRs</h2>
+    <header><div class="eyebrow">The PRs</div><h2>Two tracks, six PRs</h2>
       <p class="sub">The LST and hit PRs change no mkFit code and run in parallel. The mkFit track is three PRs, reviewed together and merged in order; none changes any existing output.</p></header>
     <div class="graph-wrap">
-      <svg class="graph" viewBox="0 0 1080 350" role="img" aria-label="PR dependency graph: L1, L4, and L2 then L3 feed an interim menu; M1 feeds L3 and M2; M2 then M3 give one mkFit; M4 is optional afterwards">
+      <svg class="graph" viewBox="0 0 1080 288" role="img" aria-label="PR dependency graph: L4, and L2 then L3 feed an interim menu; M1 feeds L3 and M2; M2 then M3 give one mkFit; M4 is optional afterwards">
         <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#7b8799"/></marker></defs>
-        <rect x="0" y="0" width="870" height="222" rx="12" class="g-band-l"/>
-        <rect x="0" y="232" width="870" height="112" rx="12" class="g-band-m"/>
+        <rect x="0" y="0" width="870" height="160" rx="12" class="g-band-l"/>
+        <rect x="0" y="170" width="870" height="112" rx="12" class="g-band-m"/>
         <text x="856" y="22" text-anchor="end" class="g-lane">LST AND HITS · NO MKFIT CHANGE</text>
-        <text x="20" y="337" class="g-lane">MKFIT · MKFITCORE AND THE MKFIT PACKAGES</text>
-        <path class="g-edge" d="M210,180 H236" marker-end="url(#ah)"/>
+        <text x="20" y="275" class="g-lane">MKFIT · MKFITCORE AND THE MKFIT PACKAGES</text>
+        <path class="g-edge" d="M210,118 H236" marker-end="url(#ah)"/>
         <path class="g-edge" d="M210,56 H547 V90" marker-end="url(#ah)"/>
-        <path class="g-edge" d="M210,118 H452" marker-end="url(#ah)"/>
-        <path class="g-edge" d="M426,180 H517 V146" marker-end="url(#ah)"/>
-        <path class="g-edge" d="M115,260 V240 H331 V208" marker-end="url(#ah)"/>
-        <path class="g-edge" d="M210,288 H236" marker-end="url(#ah)"/>
-        <path class="g-edge" d="M426,288 H452" marker-end="url(#ah)"/>
-        <path class="g-edge" d="M642,288 H668" marker-end="url(#ah)"/>
-        <path class="g-edge dash" d="M577,146 V260" marker-end="url(#ah)"/>
-        <path class="g-edge dash" d="M858,288 H985 V202" marker-end="url(#ah)"/>
-        <g class="g-node g-l"><rect x="20" y="28" width="190" height="56" rx="10"/><text x="34" y="51" class="t">L1 · Asynchronous LST</text><text x="34" y="70" class="s">builds on #285</text></g>
-        <g class="g-node g-l"><rect x="20" y="90" width="190" height="56" rx="10"/><text x="34" y="113" class="t">L4 · Beam-line + CPE</text><text x="34" y="132" class="s">into their own packages</text></g>
-        <g class="g-node g-l"><rect x="20" y="152" width="190" height="56" rx="10"/><text x="34" y="175" class="t">L2 · OT rechits on GPU</text><text x="34" y="194" class="s">Phase2TrackerRecHits</text></g>
-        <g class="g-node g-l"><rect x="236" y="152" width="190" height="56" rx="10"/><text x="250" y="175" class="t">L3 · LST input + seeds</text><text x="250" y="194" class="s">after L2, M1 and #280</text></g>
+        <path class="g-edge" d="M426,118 H452" marker-end="url(#ah)"/>
+        <path class="g-edge" d="M115,198 V178 H331 V146" marker-end="url(#ah)"/>
+        <path class="g-edge" d="M210,226 H236" marker-end="url(#ah)"/>
+        <path class="g-edge" d="M426,226 H452" marker-end="url(#ah)"/>
+        <path class="g-edge" d="M642,226 H668" marker-end="url(#ah)"/>
+        <path class="g-edge dash" d="M577,146 V198" marker-end="url(#ah)"/>
+        <path class="g-edge dash" d="M858,226 H985 V140" marker-end="url(#ah)"/>
+        <g class="g-node g-l"><rect x="20" y="28" width="190" height="56" rx="10"/><text x="34" y="51" class="t">L4 · Beam-line + CPE</text><text x="34" y="70" class="s">into their own packages</text></g>
+        <g class="g-node g-l"><rect x="20" y="90" width="190" height="56" rx="10"/><text x="34" y="113" class="t">L2 · OT rechits on GPU</text><text x="34" y="132" class="s">Phase2TrackerRecHits</text></g>
+        <g class="g-node g-l"><rect x="236" y="90" width="190" height="56" rx="10"/><text x="250" y="113" class="t">L3 · LST input + seeds</text><text x="250" y="132" class="s">after L2, M1 and #280</text></g>
         <g class="g-node g-i"><rect x="452" y="90" width="190" height="56" rx="10"/><text x="466" y="113" class="t">Interim menu</text><text x="466" y="132" class="s">~98 ms (estimate)</text></g>
-        <g class="g-node g-m"><rect x="20" y="260" width="190" height="56" rx="10"/><text x="34" y="283" class="t">M1 · GPU-ready physics</text><text x="34" y="302" class="s">no output change</text></g>
-        <g class="g-node g-m"><rect x="236" y="260" width="190" height="56" rx="10"/><text x="250" y="283" class="t">M2 · Shared decisions</text><text x="250" y="302" class="s">no output change</text></g>
-        <g class="g-node g-m"><rect x="452" y="260" width="190" height="56" rx="10"/><text x="466" y="283" class="t">M3 · GPU driver + menu</text><text x="466" y="302" class="s">deletes MkFitAlpaka</text></g>
-        <g class="g-node g-e"><rect x="668" y="260" width="190" height="56" rx="10"/><text x="682" y="283" class="t">One mkFit</text><text x="682" y="302" class="s">GPU tracking · ~27 ms</text></g>
-        <g class="g-node g-o"><rect x="900" y="146" width="170" height="56" rx="10"/><text x="914" y="169" class="t">M4 · One driver</text><text x="914" y="188" class="s">optional, later</text></g>
+        <g class="g-node g-m"><rect x="20" y="198" width="190" height="56" rx="10"/><text x="34" y="221" class="t">M1 · GPU-ready physics</text><text x="34" y="240" class="s">no output change</text></g>
+        <g class="g-node g-m"><rect x="236" y="198" width="190" height="56" rx="10"/><text x="250" y="221" class="t">M2 · Shared decisions</text><text x="250" y="240" class="s">no output change</text></g>
+        <g class="g-node g-m"><rect x="452" y="198" width="190" height="56" rx="10"/><text x="466" y="221" class="t">M3 · GPU driver + menu</text><text x="466" y="240" class="s">deletes MkFitAlpaka</text></g>
+        <g class="g-node g-e"><rect x="668" y="198" width="190" height="56" rx="10"/><text x="682" y="221" class="t">One mkFit</text><text x="682" y="240" class="s">GPU tracking · ~33 ms</text></g>
+        <g class="g-node g-o"><rect x="900" y="84" width="170" height="56" rx="10"/><text x="914" y="107" class="t">M4 · One driver</text><text x="914" y="126" class="s">optional, later</text></g>
       </svg>
     </div>
     <p class="note">Arrows point from what must merge first. Two small PRs can go in at any time: the explicit track algorithm in the output converter (<a href="#dev-6">DEV-6</a>) and NaN checks in MkFitCore that survive -Ofast (<a href="#dev-1">DEV-1</a>).</p>
     <details><summary>Every PR: what it does and what it waits for</summary><div class="dbody"><div class="table-wrap"><table>
       <thead><tr><th>PR</th><th>What it does</th><th>Packages</th><th>Waits for</th></tr></thead><tbody>
-      <tr><td>L1</td><td>LST's run split into tasks with an ExternalWork producer, so no CPU thread waits on the GPU. Identical outputs.</td><td>LSTCore, LST</td><td>#285 (same files); could be folded into it</td></tr>
       <tr><td>L2</td><td>OT rechits on the GPU. Our code moves into Phase2TrackerRecHits; the per-hit core of Phase2StripCPE becomes a plain function that the host CPE also calls.</td><td>Phase2TrackerRecHits, PixelTrackFitting</td><td>nothing</td></tr>
       <tr><td>L3</td><td>LST's input and the LST seed fits on the GPU. Our code moves into RecoTracker/LST; the seed fits use the GPU-ready propagation from M1.</td><td>LST, TkSeedGenerator</td><td>L2, M1, #280</td></tr>
       <tr><td>L4</td><td>The beam-line state and the pixel CPE with track angles. Our GPU versions move into TrackingTools and SiPixelRecHits; the pure formulas (generic position formula, field, Newton step) are shared with the host code.</td><td>TrackingTools, SiPixelRecHits, MagneticField</td><td>nothing</td></tr>
       <tr><td>M1</td><td>MkFitCore's matrices, propagation and Kalman update move into headers, templated on the batch width, and become GPU-callable. MkFitCore's CPU code uses them at width 8 with unchanged output; our GPU code at width 1. Our copy (6.9k lines) is deleted.</td><td>MkFitCore</td><td>#186 and #187 (same files)</td></tr>
       <tr><td>M2</td><td>MkFitCore's per-candidate decisions (hit window and acceptance, scoring, candidate bookkeeping, outlier rules, filters, the duplicate test) become functions that both drivers call. MkFitCore keeps its own containers and sorts; output unchanged. Our fit improvements become MkFitCore options, off by default. Our copy (2.2k lines) is deleted.</td><td>MkFitCore, MkFitCMS</td><td>M1</td></tr>
-      <tr><td>M3</td><td>Our GPU driver joins the mkFit packages, its products go to DataFormats, one output converter, and the HLT menu switch. RecoTracker/MkFitAlpaka is deleted.</td><td>MkFitCore, MkFit, DataFormats, HLTrigger</td><td>M2, L1–L4, the LST-step fixes + JSON</td></tr>
+      <tr><td>M3</td><td>Our GPU driver joins the mkFit packages, its products go to DataFormats, one output converter, and the HLT menu switch. RecoTracker/MkFitAlpaka is deleted.</td><td>MkFitCore, MkFit, DataFormats, HLTrigger</td><td>M2, L2–L4, the LST-step fixes + JSON</td></tr>
       <tr><td>M4 (optional)</td><td>The GPU driver also runs the CPU and MkFitCore's CPU driver is retired. Needs the features only Run 3 and Phase-2 offline use (below), mkFit's standalone tools retargeted, and sign-off for slightly changed outputs.</td><td>MkFitCore, MkFit, MkFitCMS</td><td>M3, a decision with the mkFit developers and tracking</td></tr>
       </tbody></table></div></div></details>
   </div>
@@ -1337,14 +1310,14 @@ topIdx[pos] = j;  topScore[pos] = o.score;</pre></div>
       <p class="sub">Every PR is built and gated in about a week, before review starts. All of them are opened together, reviewed in parallel and merged in order. Review times assume about 3 months for the mkFit PRs (the original mkFit integration took 2) and 1–2 months for the smaller ones.</p></header>
     <div class="road-scroll"><div class="road m7" role="img" aria-label="Roadmap from October 2026 to April 2027">
       <div class="lab">Design note<small>meeting with the mkFit developers</small></div><div class="lane"><div class="bar c-grey" style="left:4.3%;width:7.1%">agree</div></div>
-      <div class="lab">All seven PRs built<small>agents, about a week, with gates</small></div><div class="lane"><div class="bar dev-blue" style="left:9.3%;width:5%"></div></div>
-      <div class="lab">L1 · L2 · L4<small>LST and hits</small></div><div class="lane"><div class="bar c-green" style="left:14.3%;width:17.1%">review</div></div>
+      <div class="lab">All six PRs built<small>agents, about a week, with gates</small></div><div class="lane"><div class="bar dev-blue" style="left:9.3%;width:5%"></div></div>
+      <div class="lab">L2 · L4<small>LST and hits</small></div><div class="lane"><div class="bar c-green" style="left:14.3%;width:17.1%">review</div></div>
       <div class="lab">M1 · GPU-ready physics</div><div class="lane"><div class="bar c-blue" style="left:14.3%;width:21.4%">review</div></div>
       <div class="lab">L3 · LST input + seeds<small>merges after M1</small></div><div class="lane"><div class="bar c-green" style="left:14.3%;width:24.3%">review</div></div>
       <div class="lab">Interim menu<small>~98 ms, estimate</small></div><div class="lane"><span class="ms ms-amber" style="left:40%"></span></div>
       <div class="lab">M2 · shared decisions<small>merges after M1</small></div><div class="lane"><div class="bar c-blue" style="left:14.3%;width:31.4%">review</div></div>
       <div class="lab">M3 · GPU driver + menu<small>merges after M2</small></div><div class="lane"><div class="bar c-blue" style="left:14.3%;width:42.9%">review</div></div>
-      <div class="lab"><strong>One mkFit</strong><small>GPU tracking in the release, ~27 ms</small></div><div class="lane"><span class="ms ms-navy" style="left:58.6%"></span></div>
+      <div class="lab"><strong>One mkFit</strong><small>GPU tracking in the release, ~33 ms</small></div><div class="lane"><span class="ms ms-navy" style="left:58.6%"></span></div>
       <div class="axis"><span>Oct</span><span>Nov</span><span>Dec</span><span>Jan</span><span>Feb</span><span>Mar</span><span>Apr 2027</span></div>
     </div></div>
     <div class="legend" style="margin-top:12px"><span><i class="dev-key"></i>built by agents</span><span><i class="c-blue"></i>mkFit PR in review</span><span><i class="c-green"></i>LST / hits PR in review</span><span><i class="ms-key"></i>milestone</span></div>
@@ -1354,9 +1327,9 @@ topIdx[pos] = j;  topScore[pos] = o.score;</pre></div>
     <header><div class="eyebrow">Along the way</div><h2>HLT tracking time at each milestone</h2>
       <p class="sub">CPU time per event in the Phase-2 HLT GPU menu, drawn to scale.</p></header>
     <div class="hbars">
-      <div class="hb-lab">Today<small>default menu</small></div><div class="hb-track"><div class="hb c-grey" style="width:calc((100% - 190px) * 1)"></div><span class="hb-v">288.8 ms</span></div>
-      <div class="hb-lab">Interim menu<small>after L1–L4 and M1</small></div><div class="hb-track"><div class="hb hb-est" style="width:calc((100% - 190px) * 0.339)"></div><span class="hb-v">~98 ms, estimate</span></div>
-      <div class="hb-lab">One mkFit<small>after M3</small></div><div class="hb-track"><div class="hb c-blue" style="width:calc((100% - 190px) * 0.092)"></div><span class="hb-v">~27 ms (#290 measures 26.5)</span></div>
+      <div class="hb-lab">Today<small>default menu</small></div><div class="hb-track"><div class="hb c-grey" style="width:calc((100% - 190px) * 1)"></div><span class="hb-v">289.5 ms</span></div>
+      <div class="hb-lab">Interim menu<small>after L2–L4 and M1</small></div><div class="hb-track"><div class="hb hb-est" style="width:calc((100% - 190px) * 0.338)"></div><span class="hb-v">~98 ms, estimate</span></div>
+      <div class="hb-lab">One mkFit<small>after M3</small></div><div class="hb-track"><div class="hb c-blue" style="width:calc((100% - 190px) * 0.113)"></div><span class="hb-v">~33 ms (#290 measures 32.7)</span></div>
     </div>
     <p class="note">The interim menu runs everything up to LST and the seeds on the GPU, then MkFitCore's building and fit on the CPU. Its number is estimated from the stage table on the Results page (copies of hits and seeds to the host not included); it has not been measured.</p>
   </div>
@@ -1422,7 +1395,7 @@ topIdx[pos] = j;  topScore[pos] = o.score;</pre></div>
 
   <div class="sheet">
     <header><div class="eyebrow">#290</div><h2>What happens to #290</h2></header>
-    <p>It stays a draft, as the integration and proof branch. It is rebased onto M1 and then M2 as they land, and its validation (MTV, PF, timing, memory) is the target each step has to reproduce. It is not merged itself: its content arrives through L1–L4 and M1–M3. The unused code the audit found (about 0.5k lines) has already been removed from it.</p>
+    <p>It stays a draft, as the integration and proof branch. It is rebased onto M1 and then M2 as they land, and its validation (MTV, PF, timing, memory) is the target each step has to reproduce. It is not merged itself: its content arrives through L2–L4 and M1–M3. The unused code the audit found (about 0.5k lines) has already been removed from it.</p>
     <details><summary>What #290 depends on today (measured)</summary><div class="dbody">
       <p>Our commits built on plain SegmentLinking master without the open dependency PRs: 17 compile errors in 4 files, all from three of them.</p>
       <div class="table-wrap"><table>
@@ -1431,14 +1404,14 @@ topIdx[pos] = j;  topScore[pos] = o.score;</pre></div>
         <tr><td>mkFit final-fit updates (trackreco #186)</td><td><span class="tag t-red">compiling</span></td><td><code>Config::refitBFieldAtMid</code>, <code>refitRadialFieldCorr</code>, <code>refitElossSignFromPass</code>, <code>refitBkwMsFixedMomentum</code>, <code>refitBkwSubSteps</code>, <code>refitMaterialPerModule</code>, and the per-module <code>radl</code> / <code>bbxi</code></td></tr>
         <tr><td>mkFit + HLT LST-step fixes, with the cms-data JSON</td><td><span class="tag t-red">compiling and running</span></td><td>five IterationConfig fields: backward-fit outlier chi2, maximum outliers, minimum pT; backward-search minimum pixel layers and prompt d0</td></tr>
         <tr><td>LST memory compaction (SegmentLinking #280)</td><td><span class="tag t-red">compiling</span></td><td>the narrowed LST input layout written by the device LST-input producer</td></tr>
-        <tr><td>LST timing, DNN retrain, fine material, field constants</td><td><span class="tag t-green">physics or speed only</span></td><td>not prerequisites; the asynchronous LST commit is the one textual conflict</td></tr>
+        <tr><td>LST timing, DNN retrain, fine material, field constants</td><td><span class="tag t-green">physics or speed only</span></td><td>not prerequisites; none of our commits touches their files</td></tr>
       </tbody></table></div>
       <p class="note">Replayed onto SegmentLinking master <code>70925d8d3b3</code>, built on IB <code>CMSSW_20_1_X_2026-10-06-1100</code> with the serial backend.</p>
     </div></details>
     <details><summary>Also expected by reviewers, folded into the PRs above</summary><div class="dbody"><div class="table-wrap"><table>
       <thead><tr><th>Piece</th><th>Change</th></tr></thead><tbody>
       <tr><td>Data formats</td><td>Event products (OT rechit SoA, EventOfHits, track and candidate SoAs, seeds) move to a DataFormats package, reusing existing types where they overlap.</td></tr>
-      <tr><td>Menu switch</td><td>Per-module modifier statements in the HLT_75e33 files, as <code>trackingLST</code> and <code>trackingMkFitFit</code> do, instead of a 657-line customise.</td></tr>
+      <tr><td>Menu switch</td><td>Per-module modifier statements in the HLT_75e33 files, as <code>trackingLST</code> and <code>trackingMkFitFit</code> do, instead of a 644-line customise.</td></tr>
       <tr><td>Per-run tables</td><td>Navigation, module and CPE tables built by the EventSetup rather than inside producers.</td></tr>
       <tr><td>Build flags</td><td>MkFitCore's own <code>-Ofast</code> handling for its CPU code; the GPU side documents its flags.</td></tr>
       <tr><td>Matriplex generators</td><td>One copy, MkFitCore's.</td></tr>
@@ -1469,14 +1442,14 @@ topIdx[pos] = j;  topScore[pos] = o.score;</pre></div>
         <tr><td>Is the configuration defined twice?</td><td>The device configuration is converted from MkFitCore's own; today the supported-settings checks also exist in python. In the proposal the GPU driver checks the configuration in C++ and rejects anything it does not support.</td><td><span class="tag t-amber">to do</span></td></tr>
         <tr><td>Some files are very large.</td><td>PropagationMPlex.h 1425 lines, NavSearch.h 1191, FitKernels.h 949. In the plan the copied physics goes back into MkFitCore's own files; what stays is split by stage and kernel.</td><td><span class="tag t-amber">to do</span></td></tr>
         <tr><td>Is ROCm validated?</td><td>It builds; it needs AMD test machines or a clear unsupported note.</td><td><span class="tag t-grey">later</span></td></tr>
-        <tr><td>Is the CPU backend as fast as MkFitCore?</td><td>The whole CPU chain is faster (95.3 vs 163.6 ms), and the final fit too (20.0 vs 23.2 ms) since #290 vectorises its CPU Kalman loops as MkFitCore does. Track building is 3.4 ms slower on a busy machine (34.6 vs 31.2 ms), about the cost of the LST seed fit it contains; on one quiet thread the two are within 0.3 ms. See <a href="#cpu">Why faster on CPU</a>.</td><td><span class="tag t-green">answered</span></td></tr>
-        <tr><td>Does it use more GPU memory?</td><td>11.8 GB vs 10.1 GB for the KF menu at 4 jobs (+17%), after releasing products early and right-sizing buffers.</td><td><span class="tag t-green">stated</span></td></tr>
+        <tr><td>Is the CPU backend as fast as MkFitCore?</td><td>The whole CPU chain is faster (95.5 vs 167.3 ms), and the final fit too (20.1 vs 23.4 ms) since #290 vectorises its CPU Kalman loops as MkFitCore does. Track building is 3.2 ms slower on a busy machine (34.6 vs 31.4 ms), about the cost of the LST seed fit it contains; on one quiet thread the two are within 0.3 ms. See <a href="#cpu">Why faster on CPU</a>.</td><td><span class="tag t-green">answered</span></td></tr>
+        <tr><td>Does it use more GPU memory?</td><td>11.4 GB vs 10.3 GB for the KF menu at 4 jobs (+11%), after releasing products early and right-sizing buffers.</td><td><span class="tag t-green">stated</span></td></tr>
         <tr><td>Who maintains it?</td><td>In the plan the GPU driver lives in the mkFit packages and we maintain it; to agree with the mkFit developers.</td><td><span class="tag t-amber">to do</span></td></tr>
       </tbody></table></div>
   </div>
 </section>
 </main>
-<footer>Built from the branch <code>GNiendorf:mkfit-alpaka-heterogeneous</code> at <code>e8be62b67e8</code> on SegmentLinking master, 7 October 2026.</footer>
+<footer>Built from the PR head of the branch <code>GNiendorf:mkfit-alpaka-heterogeneous</code> on SegmentLinking master, 8 October 2026.</footer>
 
 <script>
 (function(){
