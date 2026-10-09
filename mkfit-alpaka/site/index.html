@@ -359,7 +359,7 @@ p code,li code,td code,h3 code,span code,summary code,.stage code{overflow-wrap:
     <p class="note">CPU-thread times at 4 jobs × 16 threads × 16 streams (both menus from one build, mean of two alternating runs): the mkFit-fit menu, where all of this runs on the CPU, vs this PR on the GPU backend.</p>
     <div class="grid2" style="margin-top:16px">
       <div class="card"><h3>Where it is in #290</h3><p>Two commits: “Seeds and the LST hand-off” (<code>MkFitAlpakaLstInputProducer</code>, <code>PixSeedKernels.h</code>) and “Hit input and EventOfHits” (<code>MkFitAlpakaOTRecHitsProducer</code>).</p></div>
-      <div class="card"><h3>What it waits for</h3><p>The refit uses mkFit's propagation and Kalman update on the GPU, and the same fit then gives mkFit its starting seeds. In the <a href="#plan">proposed plan</a> this is PR L3. It needs only M1, MkFitCore's portable physics, not the rest of the mkFit work, so it can merge right after M1, around December, ahead of the GPU building and fit.</p></div>
+      <div class="card"><h3>What it waits for</h3><p>The refit uses mkFit's propagation and Kalman update on the GPU, and the same fit then gives mkFit its starting seeds. In the <a href="#plan">proposed plan</a> this is PR L2. It needs only M1, MkFitCore's portable physics, not the rest of the mkFit work, so it can merge right after M1, around December, ahead of the GPU building and fit.</p></div>
     </div>
     <details><summary>Could it come even sooner?</summary><div class="dbody">
       <p>Only without mkFit's propagation. Two ways, neither proposed:</p>
@@ -367,7 +367,7 @@ p code,li code,td code,h3 code,span code,summary code,.stage code{overflow-wrap:
         <li><b>Use Patatrack's own track parameters for LST's pixel seeds, with no refit.</b> No mkFit code and a small PR, but LST's pixel seeds would carry different momentum and charge estimates from the ones LST is tuned on. It needs a physics check of LST, and possibly retuning.</li>
         <li><b>A small GPU refit written just for the seeds.</b> No mkFit code either, but a third copy of the propagation and update math, which is the maintainability problem the one-mkFit study is solving.</li>
       </ul>
-      <p>The proposed plan avoids both: L3 uses the portable propagation that M1 puts into MkFitCore, which is already in CMSSW.</p>
+      <p>The proposed plan avoids both: L2 uses the portable propagation that M1 puts into MkFitCore, which is already in CMSSW.</p>
     </div></details>
   </div>
 
@@ -853,7 +853,7 @@ chain is already in the process.</pre>
   </article>
 
   <article class="sheet devx" id="dev-7">
-    <div class="devx-head"><span class="devid-l">DEV-7</span><span class="tag t-blue">moved to the GPU</span><span class="tag t-grey">part of L3, LST input on the GPU</span></div>
+    <div class="devx-head"><span class="devid-l">DEV-7</span><span class="tag t-blue">moved to the GPU</span><span class="tag t-grey">part of L2, LST input on the GPU</span></div>
     <h3 class="devx-title">The pixel seeds for LST are computed on the GPU</h3>
     <p class="devx-short">LST takes each pixel track's position, momentum and their errors from a refit of its hits, today done on the CPU. The port does the same refit on the GPU with the same formulas, using mkFit's propagation. The values agree closely; in the far forward region the pT error comes out a little larger.</p>
     <div class="devx-grid">
@@ -1256,7 +1256,7 @@ topIdx[pos] = j;  topScore[pos] = o.score;</pre></div>
       <tr><td>GPU driver: the kernels that organise the work</td><td class="n">5.9k</td><td><b>Stays</b>, moves into the mkFit packages.</td></tr>
       <tr><td>GPU data formats and products</td><td class="n">2.3k</td><td><b>Stays</b>, moves to DataFormats.</td></tr>
       <tr><td>CMSSW modules, configuration check, menu</td><td class="n">3.7k</td><td><b>Stays</b>, partly moves to RecoTracker/MkFit.</td></tr>
-      <tr><td>GPU versions of other CMSSW steps: navigation, seed creation, LST input and hand-off, CPEs, OT rechits</td><td class="n">~9k</td><td><b>Stays</b> as GPU code, moved into the packages that own those steps (L2–L4). These are new GPU designs, not copies of host code. Navigation is an open question for the tracking conveners.</td></tr>
+      <tr><td>GPU versions of other CMSSW steps: navigation, seed creation, LST input and hand-off, CPEs, OT rechits</td><td class="n">~9k</td><td><b>Stays</b> as GPU code, moved into the packages that own those steps (L1–L3). These are new GPU designs, not copies of host code. Navigation is an open question for the tracking conveners.</td></tr>
       <tr><td>Tests and docs; new interfaces in MkFitCore</td><td class="n">2.6k</td><td><b>Stays.</b></td></tr>
       </tbody></table></div>
     <p class="note">Counted function by function, ±10% per component. The "copy of MkFitCore" is relative to MkFitCore with the open mkFit PRs (#186, #187) applied, which is what #290 builds on; M1 waits for them.</p>
@@ -1266,7 +1266,7 @@ topIdx[pos] = j;  topScore[pos] = o.score;</pre></div>
     <header><div class="eyebrow">The PRs</div><h2>Two tracks, six PRs</h2>
       <p class="sub">The LST and hit PRs change no mkFit code and run in parallel. The mkFit track is three PRs, reviewed together and merged in order; none changes any existing output.</p></header>
     <div class="graph-wrap">
-      <svg class="graph" viewBox="0 0 1080 288" role="img" aria-label="PR dependency graph: L4, and L2 then L3 feed an interim menu; M1 feeds L3 and M2; M2 then M3 give one mkFit; M4 is optional afterwards">
+      <svg class="graph" viewBox="0 0 1080 288" role="img" aria-label="PR dependency graph: L3, and L1 then L2 feed an interim menu; M1 feeds L2 and M2; M2 then M3 give one mkFit; M4 is optional afterwards">
         <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#7b8799"/></marker></defs>
         <rect x="0" y="0" width="870" height="160" rx="12" class="g-band-l"/>
         <rect x="0" y="170" width="870" height="112" rx="12" class="g-band-m"/>
@@ -1281,9 +1281,9 @@ topIdx[pos] = j;  topScore[pos] = o.score;</pre></div>
         <path class="g-edge" d="M642,226 H668" marker-end="url(#ah)"/>
         <path class="g-edge dash" d="M577,146 V198" marker-end="url(#ah)"/>
         <path class="g-edge dash" d="M858,226 H985 V140" marker-end="url(#ah)"/>
-        <g class="g-node g-l"><rect x="20" y="28" width="190" height="56" rx="10"/><text x="34" y="51" class="t">L4 · Beam-line + CPE</text><text x="34" y="70" class="s">into their own packages</text></g>
-        <g class="g-node g-l"><rect x="20" y="90" width="190" height="56" rx="10"/><text x="34" y="113" class="t">L2 · OT rechits on GPU</text><text x="34" y="132" class="s">Phase2TrackerRecHits</text></g>
-        <g class="g-node g-l"><rect x="236" y="90" width="190" height="56" rx="10"/><text x="250" y="113" class="t">L3 · LST input + seeds</text><text x="250" y="132" class="s">after L2, M1 and #280</text></g>
+        <g class="g-node g-l"><rect x="20" y="28" width="190" height="56" rx="10"/><text x="34" y="51" class="t">L3 · Beam-line + CPE</text><text x="34" y="70" class="s">into their own packages</text></g>
+        <g class="g-node g-l"><rect x="20" y="90" width="190" height="56" rx="10"/><text x="34" y="113" class="t">L1 · OT rechits on GPU</text><text x="34" y="132" class="s">Phase2TrackerRecHits</text></g>
+        <g class="g-node g-l"><rect x="236" y="90" width="190" height="56" rx="10"/><text x="250" y="113" class="t">L2 · LST input + seeds</text><text x="250" y="132" class="s">after L1, M1 and #280</text></g>
         <g class="g-node g-i"><rect x="452" y="90" width="190" height="56" rx="10"/><text x="466" y="113" class="t">Interim menu</text><text x="466" y="132" class="s">~98 ms (estimate)</text></g>
         <g class="g-node g-m"><rect x="20" y="198" width="190" height="56" rx="10"/><text x="34" y="221" class="t">M1 · GPU-ready physics</text><text x="34" y="240" class="s">no output change</text></g>
         <g class="g-node g-m"><rect x="236" y="198" width="190" height="56" rx="10"/><text x="250" y="221" class="t">M2 · Shared decisions</text><text x="250" y="240" class="s">no output change</text></g>
@@ -1295,12 +1295,12 @@ topIdx[pos] = j;  topScore[pos] = o.score;</pre></div>
     <p class="note">Arrows point from what must merge first. Two small PRs can go in at any time: the explicit track algorithm in the output converter (<a href="#dev-6">DEV-6</a>) and NaN checks in MkFitCore that survive -Ofast (<a href="#dev-1">DEV-1</a>).</p>
     <details><summary>Every PR: what it does and what it waits for</summary><div class="dbody"><div class="table-wrap"><table>
       <thead><tr><th>PR</th><th>What it does</th><th>Packages</th><th>Waits for</th></tr></thead><tbody>
-      <tr><td>L2</td><td>OT rechits on the GPU. Our code moves into Phase2TrackerRecHits; the per-hit core of Phase2StripCPE becomes a plain function that the host CPE also calls.</td><td>Phase2TrackerRecHits, PixelTrackFitting</td><td>nothing</td></tr>
-      <tr><td>L3</td><td>LST's input and the LST seed fits on the GPU. Our code moves into RecoTracker/LST; the seed fits use the GPU-ready propagation from M1.</td><td>LST, TkSeedGenerator</td><td>L2, M1, #280</td></tr>
-      <tr><td>L4</td><td>The beam-line state and the pixel CPE with track angles. Our GPU versions move into TrackingTools and SiPixelRecHits; the pure formulas (generic position formula, field, Newton step) are shared with the host code.</td><td>TrackingTools, SiPixelRecHits, MagneticField</td><td>nothing</td></tr>
+      <tr><td>L1</td><td>OT rechits on the GPU. Our code moves into Phase2TrackerRecHits; the per-hit core of Phase2StripCPE becomes a plain function that the host CPE also calls.</td><td>Phase2TrackerRecHits, PixelTrackFitting</td><td>nothing</td></tr>
+      <tr><td>L2</td><td>LST's input and the LST seed fits on the GPU. Our code moves into RecoTracker/LST; the seed fits use the GPU-ready propagation from M1.</td><td>LST, TkSeedGenerator</td><td>L1, M1, #280</td></tr>
+      <tr><td>L3</td><td>The beam-line state and the pixel CPE with track angles. Our GPU versions move into TrackingTools and SiPixelRecHits; the pure formulas (generic position formula, field, Newton step) are shared with the host code.</td><td>TrackingTools, SiPixelRecHits, MagneticField</td><td>nothing</td></tr>
       <tr><td>M1</td><td>MkFitCore's matrices, propagation and Kalman update move into headers, templated on the batch width, and become GPU-callable. MkFitCore's CPU code uses them at width 8 with unchanged output; our GPU code at width 1. Our copy (6.9k lines) is deleted.</td><td>MkFitCore</td><td>#186 and #187 (same files)</td></tr>
       <tr><td>M2</td><td>MkFitCore's per-candidate decisions (hit window and acceptance, scoring, candidate bookkeeping, outlier rules, filters, the duplicate test) become functions that both drivers call. MkFitCore keeps its own containers and sorts; output unchanged. Our fit improvements become MkFitCore options, off by default. Our copy (2.2k lines) is deleted.</td><td>MkFitCore, MkFitCMS</td><td>M1</td></tr>
-      <tr><td>M3</td><td>Our GPU driver joins the mkFit packages, its products go to DataFormats, one output converter, and the HLT menu switch. RecoTracker/MkFitAlpaka is deleted.</td><td>MkFitCore, MkFit, DataFormats, HLTrigger</td><td>M2, L2–L4, the LST-step fixes + JSON</td></tr>
+      <tr><td>M3</td><td>Our GPU driver joins the mkFit packages, its products go to DataFormats, one output converter, and the HLT menu switch. RecoTracker/MkFitAlpaka is deleted.</td><td>MkFitCore, MkFit, DataFormats, HLTrigger</td><td>M2, L1–L3, the LST-step fixes + JSON</td></tr>
       <tr><td>M4 (optional)</td><td>The GPU driver also runs the CPU and MkFitCore's CPU driver is retired. Needs the features only Run 3 and Phase-2 offline use (below), mkFit's standalone tools retargeted, and sign-off for slightly changed outputs.</td><td>MkFitCore, MkFit, MkFitCMS</td><td>M3, a decision with the mkFit developers and tracking</td></tr>
       </tbody></table></div></div></details>
   </div>
@@ -1311,9 +1311,9 @@ topIdx[pos] = j;  topScore[pos] = o.score;</pre></div>
     <div class="road-scroll"><div class="road m7" role="img" aria-label="Roadmap from October 2026 to April 2027">
       <div class="lab">Design note<small>meeting with the mkFit developers</small></div><div class="lane"><div class="bar c-grey" style="left:4.3%;width:7.1%">agree</div></div>
       <div class="lab">All six PRs built<small>agents, about a week, with gates</small></div><div class="lane"><div class="bar dev-blue" style="left:9.3%;width:5%"></div></div>
-      <div class="lab">L2 · L4<small>LST and hits</small></div><div class="lane"><div class="bar c-green" style="left:14.3%;width:17.1%">review</div></div>
+      <div class="lab">L1 · L3<small>LST and hits</small></div><div class="lane"><div class="bar c-green" style="left:14.3%;width:17.1%">review</div></div>
       <div class="lab">M1 · GPU-ready physics</div><div class="lane"><div class="bar c-blue" style="left:14.3%;width:21.4%">review</div></div>
-      <div class="lab">L3 · LST input + seeds<small>merges after M1</small></div><div class="lane"><div class="bar c-green" style="left:14.3%;width:24.3%">review</div></div>
+      <div class="lab">L2 · LST input + seeds<small>merges after M1</small></div><div class="lane"><div class="bar c-green" style="left:14.3%;width:24.3%">review</div></div>
       <div class="lab">Interim menu<small>~98 ms, estimate</small></div><div class="lane"><span class="ms ms-amber" style="left:40%"></span></div>
       <div class="lab">M2 · shared decisions<small>merges after M1</small></div><div class="lane"><div class="bar c-blue" style="left:14.3%;width:31.4%">review</div></div>
       <div class="lab">M3 · GPU driver + menu<small>merges after M2</small></div><div class="lane"><div class="bar c-blue" style="left:14.3%;width:42.9%">review</div></div>
@@ -1328,7 +1328,7 @@ topIdx[pos] = j;  topScore[pos] = o.score;</pre></div>
       <p class="sub">CPU time per event in the Phase-2 HLT GPU menu, drawn to scale.</p></header>
     <div class="hbars">
       <div class="hb-lab">Today<small>default menu</small></div><div class="hb-track"><div class="hb c-grey" style="width:calc((100% - 190px) * 1)"></div><span class="hb-v">289.5 ms</span></div>
-      <div class="hb-lab">Interim menu<small>after L2–L4 and M1</small></div><div class="hb-track"><div class="hb hb-est" style="width:calc((100% - 190px) * 0.338)"></div><span class="hb-v">~98 ms, estimate</span></div>
+      <div class="hb-lab">Interim menu<small>after L1–L3 and M1</small></div><div class="hb-track"><div class="hb hb-est" style="width:calc((100% - 190px) * 0.338)"></div><span class="hb-v">~98 ms, estimate</span></div>
       <div class="hb-lab">One mkFit<small>after M3</small></div><div class="hb-track"><div class="hb c-blue" style="width:calc((100% - 190px) * 0.113)"></div><span class="hb-v">~33 ms (#290 measures 32.7)</span></div>
     </div>
     <p class="note">The interim menu runs everything up to LST and the seeds on the GPU, then MkFitCore's building and fit on the CPU. Its number is estimated from the stage table on the Results page (copies of hits and seeds to the host not included); it has not been measured.</p>
@@ -1395,7 +1395,7 @@ topIdx[pos] = j;  topScore[pos] = o.score;</pre></div>
 
   <div class="sheet">
     <header><div class="eyebrow">#290</div><h2>What happens to #290</h2></header>
-    <p>It stays a draft, as the integration and proof branch. It is rebased onto M1 and then M2 as they land, and its validation (MTV, PF, timing, memory) is the target each step has to reproduce. It is not merged itself: its content arrives through L2–L4 and M1–M3. The unused code the audit found (about 0.5k lines) has already been removed from it.</p>
+    <p>It stays a draft, as the integration and proof branch. It is rebased onto M1 and then M2 as they land, and its validation (MTV, PF, timing, memory) is the target each step has to reproduce. It is not merged itself: its content arrives through L1–L3 and M1–M3. The unused code the audit found (about 0.5k lines) has already been removed from it.</p>
     <details><summary>What #290 depends on today (measured)</summary><div class="dbody">
       <p>Our commits built on plain SegmentLinking master without the open dependency PRs: 17 compile errors in 4 files, all from three of them.</p>
       <div class="table-wrap"><table>
@@ -1436,7 +1436,7 @@ topIdx[pos] = j;  topScore[pos] = o.score;</pre></div>
       <tbody>
         <tr><td>Is this a second copy of mkFit?</td><td>Today, partly: about 9k of its 34.6k lines copy MkFitCore's physics and building decisions. The plan removes them: MkFitCore's own files become GPU-ready and both drivers call them. The other lines are GPU code with no CPU counterpart. See <a href="#plan">Integration plan</a> and <a href="#parallel">How it runs</a>.</td><td><span class="tag t-blue">proposal</span></td></tr>
         <tr><td>Why does it differ from MkFitCore at all?</td><td>Nine documented deviations (see <a href="#changes">What's in #290</a>). In the proposal the fit rules become MkFitCore options, off by default; two small PRs (NaN guards, algorithm label) can go in now.</td><td><span class="tag t-blue">ongoing</span></td></tr>
-        <tr><td>Can the GPU pixel seeds for LST come in a separate, earlier PR?</td><td>Yes, in the proposed plan: PR L3, after M1 (MkFitCore's GPU-ready physics) and ahead of the GPU building and fit. <a href="#seeds">Details</a>.</td><td><span class="tag t-blue">answered</span></td></tr>
+        <tr><td>Can the GPU pixel seeds for LST come in a separate, earlier PR?</td><td>Yes, in the proposed plan: PR L2, after M1 (MkFitCore's GPU-ready physics) and ahead of the GPU building and fit. <a href="#seeds">Details</a>.</td><td><span class="tag t-blue">answered</span></td></tr>
         <tr><td>Where do the event products live?</td><td>Inside the package today; they move to a DataFormats package.</td><td><span class="tag t-amber">to do</span></td></tr>
         <tr><td>How is the menu switched?</td><td>By the trackingMkFitAlpaka process modifier; the large customise becomes per-module statements in the menu files.</td><td><span class="tag t-amber">to do</span></td></tr>
         <tr><td>Is the configuration defined twice?</td><td>The device configuration is converted from MkFitCore's own; today the supported-settings checks also exist in python. In the proposal the GPU driver checks the configuration in C++ and rejects anything it does not support.</td><td><span class="tag t-amber">to do</span></td></tr>
