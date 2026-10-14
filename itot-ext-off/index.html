@@ -1,0 +1,21 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>Pixel tracks without the outer-tracker extension</title>
+<style>body{font-family:sans-serif;max-width:900px;margin:24px auto;padding:0 16px;line-height:1.45} td{padding:2px 10px 2px 0;vertical-align:top}</style>
+</head><body>
+<h2>Pixel tracks without the outer-tracker extension: tracking validation</h2>
+<p>Phase-2 HLT, CPU menu (serial backend), D121, PU200. Produced 2026-10-14.</p>
+<h3>Configurations (one curve each)</h3>
+<table>
+<tr><td><b>#290</b></td><td>the base PR as is: pixel tracks extended into the outer tracker.</td></tr>
+<tr><td><b>Extension off</b></td><td>#290 with the pixel-track extension into the outer tracker turned off (pixel-only pixel-track configuration), no LST or mkFit changes.</td></tr>
+<tr><td><b>Extension off + LST/mkFit changes</b></td><td>Extension off plus this study's LST changes (new track candidates from outer-tracker triplets and pixel-less T5s completed with pixel doublets handed over by the pixel tracking; pT5 ranking and selection) and mkFit duplicate removal against surviving tracks only.</td></tr>
+</table>
+<h3>Events</h3>
+<p>ttbar: 1000 events (699 reach HLT tracking); QCD (pT-hat 1.8-2.4 TeV): 1000 events (1000 reach HLT tracking).
+The same events in all three configurations. None of these events was used to develop or tune the changes.</p>
+<h3>Plots</h3>
+<ul>
+<li><a href="ttbar/plots_hlt.html">ttbar</a></li>
+<li><a href="qcd/plots_hlt.html">QCD</a></li>
+</ul>
+<p>Collections: hltGeneral (the final HLT tracks) and hltPhase2Pixel (the pixel tracks). Ratio pads are relative to #290.</p>
+</body></html>
