@@ -9,10 +9,6 @@
 <tr><td><b>Offline tracking, workflow 34634.711 (lstmkFitOnCPUIters01TrackingOnly)</b></td><td><a href="off01_ttbar/index.html">ttbar</a>: 9128 of 9128 MTV histograms bin-by-bin identical<br><a href="off01_qcd/index.html">QCD</a>: 7854 of 9128 MTV histograms bin-by-bin identical</td></tr>
 <tr><td><b>Offline tracking, workflow 34634.711 without trackingIters01 (all iterations)</b></td><td><a href="offall_ttbar/index.html">ttbar</a>: 25112 of 25112 MTV histograms bin-by-bin identical<br><a href="offall_qcd/index.html">QCD</a>: 23841 of 25112 MTV histograms bin-by-bin identical</td></tr>
 </table>
-<p><b>Result.</b> ttbar: every MTV histogram is identical, in the HLT and in both offline configurations (a few profile histograms differ only by float rounding, relative 1e-6).
-QCD: the test has one track fewer, in one of the 500 events. There, LST builds 984 instead of 985 T4s; the lost HLT track (pT 19.6 GeV, eta -2.40) is a fake in MTV.
-HLT tracks 955,817 vs 955,818 (fake rate 1.132% vs 1.133%; efficiency and duplicate rate unchanged); offline generalTracks 2,499,066 vs 2,499,067 in both configurations.
-Rerunning the HLT QCD jobs reproduces each area's output exactly.</p>
 <p>HLT: cmsDriver.py step2 -s L1P2GT,HLT:75e33_timing,VALIDATION::hltMultiTrackValidation+hltMultiPVValidation --accelerators cpu (with the aging_1000 customisation of the earlier HLT validations).
 Offline: the step3 command of workflow 34634.711 (--procModifiers trackingLST,seedingLST,trackingMkFitHighPtTripletStep,trackingIters01 --accelerators cpu), and the same without trackingIters01.
 The offline pages show generalTracks, initialStep and highPtTripletStep (all and highPurity) and the summary plots; the bin-by-bin comparison covers every MTV histogram.</p>
