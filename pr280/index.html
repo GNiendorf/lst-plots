@@ -5,11 +5,11 @@
 <p><b>Reference</b> (black): CMSSW_20_1_X_2026-10-12-2300. <b>Test</b> (red): the same IB with cms-sw#52166 merged (823c6064a85).</p>
 <p>500 ttbar + 500 QCD (pT-hat 1.8-2.4 TeV) events, PU200, D121, CPU (serial backend). The same events in both.</p>
 <table>
-<tr><td><b>Phase-2 HLT, CPU menu (HLT:75e33_timing, all HLT track collections, extended plots)</b></td><td><a href="hlt_ttbar/plots_hlt.html">ttbar</a>: 2021 of 2021 MTV histograms bin-by-bin identical<br><a href="hlt_qcd/plots_hlt.html">QCD</a>: 1659 of 2021 MTV histograms bin-by-bin identical</td></tr>
-<tr><td><b>Offline tracking, workflow 34634.711 (lstmkFitOnCPUIters01TrackingOnly)</b></td><td><a href="off01_ttbar/index.html">ttbar</a>: 9128 of 9128 MTV histograms bin-by-bin identical<br><a href="off01_qcd/index.html">QCD</a>: 7854 of 9128 MTV histograms bin-by-bin identical</td></tr>
-<tr><td><b>Offline tracking, workflow 34634.711 without trackingIters01 (all iterations)</b></td><td><a href="offall_ttbar/index.html">ttbar</a>: 25112 of 25112 MTV histograms bin-by-bin identical<br><a href="offall_qcd/index.html">QCD</a>: 23841 of 25112 MTV histograms bin-by-bin identical</td></tr>
+<tr><td><b>Phase-2 HLT, CPU menu (HLT:75e33_timing, all HLT track collections, extended plots)</b></td><td><a href="hlt_ttbar/plots_hlt.html">ttbar</a><br><a href="hlt_qcd/plots_hlt.html">QCD</a></td></tr>
+<tr><td><b>Offline tracking, workflow 34634.711 (lstmkFitOnCPUIters01TrackingOnly)</b></td><td><a href="off01_ttbar/index.html">ttbar</a><br><a href="off01_qcd/index.html">QCD</a></td></tr>
+<tr><td><b>Offline tracking, workflow 34634.711 without trackingIters01 (all iterations)</b></td><td><a href="offall_ttbar/index.html">ttbar</a><br><a href="offall_qcd/index.html">QCD</a></td></tr>
 </table>
 <p>HLT: cmsDriver.py step2 -s L1P2GT,HLT:75e33_timing,VALIDATION::hltMultiTrackValidation+hltMultiPVValidation --accelerators cpu (with the aging_1000 customisation of the earlier HLT validations).
 Offline: the step3 command of workflow 34634.711 (--procModifiers trackingLST,seedingLST,trackingMkFitHighPtTripletStep,trackingIters01 --accelerators cpu), and the same without trackingIters01.
-The offline pages show generalTracks, initialStep and highPtTripletStep (all and highPurity) and the summary plots; the bin-by-bin comparison covers every MTV histogram.</p>
+The offline pages show generalTracks, initialStep and highPtTripletStep (all and highPurity) and the summary plots.</p>
 </body></html>
