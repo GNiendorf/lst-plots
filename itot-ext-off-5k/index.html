@@ -1,0 +1,51 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>Pixel tracks without the outer-tracker extension</title>
+<style>body{font-family:sans-serif;max-width:900px;margin:24px auto;padding:0 16px;line-height:1.45} td{padding:2px 10px 2px 0;vertical-align:top}</style>
+</head><body>
+<h2>Pixel tracks without the outer-tracker extension: tracking validation</h2>
+<p>Phase-2 HLT, CPU menu (serial backend), D121, PU200. Produced 2026-10-17 (5k sample; the 1k pages of 2026-10-14 are a subset of these events).</p>
+<h3>Configurations (one curve each)</h3>
+<table>
+<tr><td><b>#290</b></td><td>the base PR as is: pixel tracks extended into the outer tracker.</td></tr>
+<tr><td><b>Extension off</b></td><td>#290 with the pixel-track extension into the outer tracker turned off (pixel-only pixel-track configuration), no LST or mkFit changes.</td></tr>
+<tr><td><b>Extension off + LST/mkFit changes</b></td><td>Extension off plus this study's LST changes (new track candidates from outer-tracker triplets and pixel-less T5s completed with pixel doublets handed over by the pixel tracking; pT5 ranking and selection) and mkFit duplicate removal against surviving tracks only.</td></tr>
+</table>
+<h3>Events</h3>
+<p>ttbar: 5000 events (3496 reach HLT tracking); QCD (pT-hat 1.8-2.4 TeV): 5000 events (5000 reach HLT tracking).
+The same events in all three configurations. None of these events was used to develop or tune the changes.</p>
+<h3>Plots</h3>
+<ul>
+<li><a href="ttbar/plots_hlt.html">ttbar</a></li>
+<li><a href="qcd/plots_hlt.html">QCD</a></li>
+</ul>
+<p>Collections: hltGeneral (the final HLT tracks) and hltPhase2Pixel (the pixel tracks). Ratio pads are relative to #290.</p>
+<h3>Integrated numbers (statistical errors only)</h3>
+<pre>== ttbar hltGeneral_hltAssociatorByHits  (values in %, +- stat)
+  #290                                 summary-plot bins: eff 91.50, fake 0.99, dup 1.37
+  #290                                 events   3496  eff  89.29 +- 0.06  fake   0.99 +- 0.00  dup  1.37 +- 0.00  (TPs 260544, tracks 6833771)
+  Extension off                        summary-plot bins: eff 91.19, fake 0.94, dup 1.70
+  Extension off                        events   3496  eff  89.07 +- 0.06  fake   0.94 +- 0.00  dup  1.70 +- 0.00  (TPs 260544, tracks 6882962)
+  Extension off + LST/mkFit changes    summary-plot bins: eff 91.73, fake 0.93, dup 1.69
+  Extension off + LST/mkFit changes    events   3496  eff  89.56 +- 0.06  fake   0.93 +- 0.00  dup  1.69 +- 0.00  (TPs 260544, tracks 6916656)
+== ttbar hltPhase2Pixel_hltAssociatorByHits  (values in %, +- stat)
+  #290                                 summary-plot bins: eff 89.77, fake 2.11, dup 0.59
+  #290                                 events   3496  eff  87.77 +- 0.06  fake   2.11 +- 0.01  dup  0.59 +- 0.00  (TPs 260544, tracks 6277867)
+  Extension off                        summary-plot bins: eff 83.55, fake 25.97, dup 0.64
+  Extension off                        events   3496  eff  82.18 +- 0.07  fake  25.97 +- 0.02  dup  0.64 +- 0.00  (TPs 260544, tracks 8190006)
+  Extension off + LST/mkFit changes    summary-plot bins: eff 83.55, fake 25.97, dup 0.64
+  Extension off + LST/mkFit changes    events   3496  eff  82.18 +- 0.07  fake  25.97 +- 0.02  dup  0.64 +- 0.00  (TPs 260544, tracks 8190006)
+== qcd hltGeneral_hltAssociatorByHits  (values in %, +- stat)
+  #290                                 summary-plot bins: eff 90.23, fake 1.17, dup 1.34
+  #290                                 events   5000  eff  88.96 +- 0.04  fake   1.17 +- 0.00  dup  1.34 +- 0.00  (TPs 509155, tracks 9945158)
+  Extension off                        summary-plot bins: eff 90.11, fake 1.12, dup 1.67
+  Extension off                        events   5000  eff  88.89 +- 0.04  fake   1.12 +- 0.00  dup  1.67 +- 0.00  (TPs 509155, tracks 10016556)
+  Extension off + LST/mkFit changes    summary-plot bins: eff 90.81, fake 1.16, dup 1.65
+  Extension off + LST/mkFit changes    events   5000  eff  89.54 +- 0.04  fake   1.16 +- 0.00  dup  1.65 +- 0.00  (TPs 509155, tracks 10074040)
+== qcd hltPhase2Pixel_hltAssociatorByHits  (values in %, +- stat)
+  #290                                 summary-plot bins: eff 86.66, fake 2.23, dup 0.58
+  #290                                 events   5000  eff  85.63 +- 0.05  fake   2.23 +- 0.00  dup  0.58 +- 0.00  (TPs 509155, tracks 9074108)
+  Extension off                        summary-plot bins: eff 80.99, fake 25.28, dup 0.63
+  Extension off                        events   5000  eff  80.30 +- 0.06  fake  25.28 +- 0.01  dup  0.63 +- 0.00  (TPs 509155, tracks 11689072)
+  Extension off + LST/mkFit changes    summary-plot bins: eff 80.99, fake 25.28, dup 0.63
+  Extension off + LST/mkFit changes    events   5000  eff  80.30 +- 0.06  fake  25.28 +- 0.01  dup  0.63 +- 0.00  (TPs 509155, tracks 11689072)
+</pre>
+</body></html>
