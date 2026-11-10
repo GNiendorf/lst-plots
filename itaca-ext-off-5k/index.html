@@ -38,4 +38,32 @@ QCD    vertex eff.        83.97 +- 0.04       81.08 +- 0.04     83.47 +- 0.04
        vertex fake         1.85 +- 0.01        1.75 +- 0.01      1.77 +- 0.01
        signal-PV eff.     99.98 +- 0.02       98.23 +- 0.19     99.96 +- 0.03
 </pre>
+<h3>Timing and GPU memory (ttbar PU200, HLT:75e33_timing without validation; per event; measured 2026-11-03)</h3>
+<p>Each job has 16 threads and 16 streams and runs 300 events (the first 50 are not counted in the throughput). Times are ms per event from the
+timing service. All three configurations use the Alpaka mkFit. Differences are relative to "with OT extension"; errors are from two rounds.</p>
+<pre>
+Serial backend, 4 jobs
+                       with OT extension   extension off            extension off + LST/mkFit (final)
+throughput (ev/s)         17.90               22.10 (+23.5%)            22.05 (+23.2%)
+whole menu (ms)           3419                2832 (-17.2 +- 0.5%)      2830 (-17.2 +- 0.8%)
+pixel tracking (ms)        999                 411                       306
+LST (ms)                   301                 298                       348
+mkFit build + fit (ms)      57                  59                        81
+
+CUDA backend (NVIDIA L40), 4 jobs, no MPS
+                       with OT extension   extension off            extension off + LST/mkFit (final)
+throughput (ev/s)         30.35               30.70 (+1.2 +- 0.9%)      30.35 (+0.0 +- 1.0%)
+whole menu (ms)           2082                2065                      2105
+pixel tracking (ms)        7.2                 4.9                       13.8
+LST (ms)                  10.5                 6.4                       11.5
+mkFit build + fit (ms)     2.1                 2.0                        2.2
+GPU memory peak (MiB)     10237               9476 (-7.4 +- 2.6%)       7574 (-26.0 +- 1.7%)
+
+CUDA backend (NVIDIA L40), 16 jobs with MPS (one round)
+                       with OT extension   extension off            extension off + LST/mkFit (final)
+throughput (ev/s)         46.7                46.9 (+0.4%)              45.9 (-1.7%)
+GPU memory peak (MiB)     28527               28637 (+0.4%)             20097 (-29.6%)
+</pre>
+<p>In the final configuration the CA allocates exactly what it needs, which lowers the GPU memory and adds a host wait to the pixel tracking on
+the CUDA backend. Host memory was not measured.</p>
 </body></html>
